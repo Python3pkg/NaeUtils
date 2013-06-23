@@ -164,9 +164,9 @@ class Character:
         self.iHealing = math.ceil(self.iStamina / 3)
 
     def __computeWatering(self):
-        if 0 == self.iWaterring:
-            self.iInstinct = 0
-        self.iWaterring = math.ceil(self.iInstinct / 8)
+        if 0 == self.iInstinct:
+            self.iWatering = 0
+        self.iWatering = math.ceil(self.iInstinct / 8)
 
     def __computeArdor(self):
         self.iArdor = self.__computeTwoCaracAndDivisor(self.iDiscernment, self.iWill, 2)
@@ -198,13 +198,18 @@ from termcolor import colored
 class CharacterDisplayer:
 
     def setCharacter(self, oCharacter):
-        assert isinstance(oCharacter, Character)
+        try:
+            assert isinstance(oCharacter, Character)
+        except AssertionError as eError:
+            print 'Please submit a Character object'
+            raise eError
         self.oCharacter = oCharacter
 
     def display(self):
         self.displayMainDescription()
 
     def displayMainDescription(self):
+        print colored('Main description', None, None, ['bold', 'underline']) + ' : '
         sName = self.oCharacter.getName()
         if None != sName:
             self.displayMember('Name', sName)
@@ -216,5 +221,5 @@ class CharacterDisplayer:
 
 
     def displayMember(self, sMemberName, mMemberValue):
-        print colored(sMemberName+' : ', 'green') + colored(mMemberValue, 'red')
+        print colored(sMemberName, 'green', None, ['underline']) + ' : '+ colored(mMemberValue, 'red')
 
