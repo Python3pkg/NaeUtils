@@ -189,7 +189,7 @@ class Character:
         self.iBook = self.__computeTwoCaracAndDivisor(self.iMental, self.iWill, 2)
 
     def __computeStar(self):
-
+        print 'todo'
 
     def __computeElementary(self):
         self.dElementary['fire'] = self.__computeTwoCaracAndDivisor(self.iStrength, self.iCharism, 2)
