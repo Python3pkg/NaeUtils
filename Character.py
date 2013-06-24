@@ -32,12 +32,18 @@ class Character:
         self.iStar = None
         self.iPanache = None
 
-        self.dStarModificator = {'ardor': 0, 'reflex' : 0, 'muse': 0, 'book': 0}
-
+        self.dStarModificator = {'Ardor': 0, 'Reflex' : 0, 'Muse': 0, 'Book': 0}
 
         # Counters
         self.iMoney = 0
 
+    # Set a start modificator. If set, the star
+    def setStarModificator(self, sCarac, iValue):
+        if sCarac not in self.dStarModificator:
+            raise AssertionError('star modificator must be in '+ ','.join(self.dStarModificator.keys()))
+        if iValue < -3 or iValue > 3:
+            raise ArithmeticError(' value must be between -3 and 3')
+        self.dStarModificator[sCarac] = iValue
 
     def getName(self):
         return self.sName
