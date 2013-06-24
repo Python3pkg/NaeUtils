@@ -20,7 +20,7 @@ class Character:
         self.iInstinct = 0 # Instinct
 
         # deducted caracteristics
-        self.dElementary = {}
+        self.dElementary = {'fire':0, 'water': 0, 'earth': 0, 'air': 0}
 
         self.iLifeMax = None # Stamina x 2 + Strength
         self.iNaergyMax = None #
@@ -31,6 +31,8 @@ class Character:
         self.iTalent = None
         self.iStar = None
         self.iPanache = None
+
+        self.dStarModificator = {'ardor': 0, 'reflex' : 0, 'muse': 0, 'book': 0}
 
 
         # Counters
@@ -180,12 +182,14 @@ class Character:
     def __computeBook(self):
         self.iBook = self.__computeTwoCaracAndDivisor(self.iMental, self.iWill, 2)
 
-    def __computeElementary(self):
-        self.dElementary.fire = self.__computeTwoCaracAndDivisor(self.iStrength, self.iCharism, 2)
-        self.dElementary.water = self.__computeTwoCaracAndDivisor(self.iDiscernment, self.iMental, 2)
-        self.dElementary.earth = self.__computeTwoCaracAndDivisor(self.iStamina, self.iWill, 2)
-        self.dElementary.air = self.__computeTwoCaracAndDivisor(self.iAgility, self.iInstinct, 2)
+    def __computeStar(self):
 
+
+    def __computeElementary(self):
+        self.dElementary['fire'] = self.__computeTwoCaracAndDivisor(self.iStrength, self.iCharism, 2)
+        self.dElementary['water'] = self.__computeTwoCaracAndDivisor(self.iDiscernment, self.iMental, 2)
+        self.dElementary['earth'] = self.__computeTwoCaracAndDivisor(self.iStamina, self.iWill, 2)
+        self.dElementary['air'] = self.__computeTwoCaracAndDivisor(self.iAgility, self.iInstinct, 2)
 
     def __computeTwoCaracAndDivisor(self, iFirstCarac, iSecond, iDivisor):
         return math.ceil((iFirstCarac + iSecond) / iDivisor)
@@ -194,6 +198,7 @@ class Character:
 ##  DISPLAYER FOR CHARACTER  ##
 ###############################
 from termcolor import colored
+import texttable as tt
 
 class CharacterDisplayer:
 
@@ -207,9 +212,12 @@ class CharacterDisplayer:
 
     def display(self):
         self.displayMainDescription()
+        self.displayMainCaracteristicts()
+        self.displaySecondaryCaracteristics()
 
     def displayMainDescription(self):
-        print colored('Main description', None, None, ['bold', 'underline']) + ' : '
+        self.__displayTitle('Main description')
+
         sName = self.oCharacter.getName()
         if None != sName:
             self.displayMember('Name', sName)
@@ -219,7 +227,48 @@ class CharacterDisplayer:
             self.displayMember('Age', iAge)
 
 
+    def displayMainCaracteristicts(self):
+        self.__displayTitle('Caracteristics (main)')
+        oCharacter = self.oCharacter
+        lRows = [
+            ['Strength', oCharacter.getStrength()],
+            ['Stamina', oCharacter.getStamina()],
+            ['Agility', oCharacter.getAgility()],
+            ['Discernment', oCharacter.getDiscernment()],
+            ['Mental', oCharacter.getMental()],
+            ['Instinct', oCharacter.getInstinct()],
+            ['Charism', oCharacter.getCharism()],
+            ['Will', oCharacter.getWill()]
+        ]
+        self.__displayCaracList(lRows)
 
-    def displayMember(self, sMemberName, mMemberValue):
-        print colored(sMemberName, 'green', None, ['underline']) + ' : '+ colored(mMemberValue, 'red')
+    def displaySecondaryCaracteristics(self):
+        self.__displayTitle('Caracteristics (secondary)')
+        oCharacter = self.oCharacter
+        lRows = [
+            ['Ardor', oCharacter.getArdor()],
+            ['Reflex', oCharacter.getReflex()],
+            ['Muse', oCharacter.getMuse()],
+            ['Book', oCharacter.getBook()],
+            ['Star', oCharacter.getStar()],
+            ['Element-Fire', oCharacter.getElementary('fire')],
+            ['Element-Water', oCharacter.getElementary('water')],
+            ['Element-Earth', oCharacter.getElementary('earth')],
+            ['Element-Air', oCharacter.getElementary('air')],
+        ]
+        self.__displayCaracList(lRows)
+
+
+    def __displayTitle(self, sTitle):
+        print colored(sTitle, None, None, ['bold', 'underline']) + ' : '
+    def __displayCaracList(self, lCaracList):
+        oTextTable = tt.Texttable()
+        oTextTable.header(['Caracteristic', 'Value'])
+        oTextTable.add_rows(lCaracList, False)
+        sDisplay = oTextTable.draw()
+        print sDisplay
+
+    # Display a description
+    def displayMember(self, sMemberName, mMemberValue, sColor='white'):
+        print colored(sMemberName, 'green', None, ['underline']) + ' : '+ colored(mMemberValue, sColor)
 
