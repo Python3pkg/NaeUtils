@@ -303,7 +303,7 @@ class CharacterDisplayer:
         self.__displayCaracList(lRows)
 
     def displayTraitCaracteristics(self):
-        self.__displayTitle('Caracteristics (traits')
+        self.__displayTitle('Caracteristics (traits)')
         oCharacter = self.oCharacter
         lRows = [
             ['Talent', oCharacter.getTalent()],
