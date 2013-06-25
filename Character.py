@@ -30,7 +30,7 @@ class Character:
         self.iNaergy = None
         self.iTalent = None
         self.iStar = None
-        self.iPanache = None
+        self.iSpirit = None
 
         self.dStarModificator = {'Ardor': 0, 'Reflex' : 0, 'Muse': 0, 'Book': 0}
 
@@ -60,15 +60,20 @@ class Character:
 
     # This method allows to compute all secondaries and traits caracteristic from the primary
     def compute(self):
+        ## secondary
         self.__computeArdor()
-        self.__computeLifeMax()
-        self.__computeHealing()
         self.__computeWatering()
         self.__computeBook()
         self.__computeElementary()
         self.__computeMuse()
         self.__computeReflex()
         self.__computeStar()
+        ## traits
+        self.__computeLifeMax()
+        self.__computeNaergyMax()
+        self.__computeSpirit()
+        self.__computeHealing()
+        self.__computeTalent()
 
 
     # base
@@ -145,13 +150,13 @@ class Character:
     # traits
 
     def getSpirit(self):
-        return self.iPanache
+        return self.iSpirit
 
     def getLifeMax(self):
         return self.iLifeMax
 
     def getNaergyMax(self):
-        return self.iNaergy
+        return self.iNaergyMax
 
     def getHealing(self):
         return self.iHealing
@@ -175,21 +180,6 @@ class Character:
 
     def subMoney(self, iMoneyToSub):
         self.iMoney -= iMoneyToSub
-
-
-    # Caracteristic compute
-    def __computeLifeMax(self):
-        self.iLifeMax = (self.iStamina * 2) + self.iStrength # force confirmee pour composante
-
-    def __computeHealing(self):
-        if 0 == self.iStamina:
-            self.iHealing = 0
-        self.iHealing = math.ceil(self.iStamina / 3)
-
-    def __computeWatering(self):
-        if 0 == self.iInstinct:
-            self.iWatering = 0
-        self.iWatering = math.ceil(self.iInstinct / 8)
 
     def __computeArdor(self):
         self.iArdor = self.__computeTwoCaracAndDivisor(self.iDiscernment, self.iWill, 2)
@@ -220,8 +210,32 @@ class Character:
         self.dElementary['earth'] = self.__computeTwoCaracAndDivisor(self.iStamina, self.iWill, 2)
         self.dElementary['air'] = self.__computeTwoCaracAndDivisor(self.iAgility, self.iInstinct, 2)
 
+    ## compute traits
+    def __computeLifeMax(self):
+        self.iLifeMax = (self.iStamina * 2) + self.iStrength # force confirmee pour composante
+        # Caracteristic compute
+
+    def __computeNaergyMax(self):
+        self.iNaergyMax = (self.iCharism + self.iInstinct)
+
+    def __computeHealing(self):
+        if 0 == self.iStamina:
+            self.iHealing = 0
+        self.iHealing = math.floor(self.iStamina / 3)
+
+    def __computeWatering(self):
+        if 0 == self.iInstinct:
+            self.iWatering = 0
+        self.iWatering = math.floor(self.iInstinct / 8)
+
+    def __computeSpirit(self):
+        self.iSpirit = self.__computeTwoCaracAndDivisor(self.iArdor, self.iReflex, 4)
+
+    def __computeTalent(self):
+        self.iTalent = self.__computeTwoCaracAndDivisor(self.iMuse, self.iArdor, 4)
+
     def __computeTwoCaracAndDivisor(self, iFirstCarac, iSecond, iDivisor):
-        return math.ceil((iFirstCarac + iSecond) / iDivisor)
+        return math.floor((iFirstCarac + iSecond) / iDivisor)
 
 ###############################
 ##  DISPLAYER FOR CHARACTER  ##
@@ -243,6 +257,7 @@ class CharacterDisplayer:
         self.displayMainDescription()
         self.displayMainCaracteristicts()
         self.displaySecondaryCaracteristics()
+        self.displayTraitCaracteristics()
 
     def displayMainDescription(self):
         self.__displayTitle('Main description')
@@ -287,6 +302,18 @@ class CharacterDisplayer:
         ]
         self.__displayCaracList(lRows)
 
+    def displayTraitCaracteristics(self):
+        self.__displayTitle('Caracteristics (traits')
+        oCharacter = self.oCharacter
+        lRows = [
+            ['Talent', oCharacter.getTalent()],
+            ['Spirit', oCharacter.getSpirit()],
+            ['Life Maximum', oCharacter.getLifeMax()],
+            ['Naergy Maximum', oCharacter.getNaergyMax()],
+            ['Healing', oCharacter.getHealing()],
+            ['Watering', oCharacter.getWatering()]
+        ]
+        self.__displayCaracList(lRows)
 
     def __displayTitle(self, sTitle):
         print colored(sTitle, None, None, ['bold', 'underline']) + ' : '
