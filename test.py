@@ -14,6 +14,7 @@ oCharacter.setStamina(16)
 oCharacter.setWill(16)
 oCharacter.setDiscernment(13)
 oCharacter.setMental(17)
+oCharacter.setStarModificator('Book', -2)
 oCharacter.compute()
 oCharacterDisplayer = CharacterDisplayer()
 

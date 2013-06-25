@@ -41,8 +41,8 @@ class Character:
     def setStarModificator(self, sCarac, iValue):
         if sCarac not in self.dStarModificator:
             raise AssertionError('star modificator must be in '+ ','.join(self.dStarModificator.keys()))
-        if iValue < -3 or iValue > 3:
-            raise ArithmeticError(' value must be between -3 and 3')
+        if iValue < -3 or iValue > 0:
+            raise ArithmeticError(' value must be between -3 and 0')
         self.dStarModificator[sCarac] = iValue
 
     def getName(self):
@@ -68,6 +68,7 @@ class Character:
         self.__computeElementary()
         self.__computeMuse()
         self.__computeReflex()
+        self.__computeStar()
 
 
     # base
@@ -178,18 +179,26 @@ class Character:
 
     def __computeArdor(self):
         self.iArdor = self.__computeTwoCaracAndDivisor(self.iDiscernment, self.iWill, 2)
+        self.iArdor += self.dStarModificator['Ardor']
 
     def __computeReflex(self):
         self.iReflex = self.__computeTwoCaracAndDivisor(self.iAgility, self.iDiscernment, 2)
+        self.iReflex += self.dStarModificator['Reflex']
 
     def __computeMuse(self):
         self.iMuse = self.__computeTwoCaracAndDivisor(self.iCharism, self.iInstinct, 2)
+        self.iMuse += self.dStarModificator['Muse']
 
     def __computeBook(self):
         self.iBook = self.__computeTwoCaracAndDivisor(self.iMental, self.iWill, 2)
+        self.iBook += self.dStarModificator['Book']
 
     def __computeStar(self):
-        print 'todo'
+        self.iStar = 4
+        self.iStar -= self.dStarModificator['Ardor']
+        self.iStar -= self.dStarModificator['Muse']
+        self.iStar -= self.dStarModificator['Reflex']
+        self.iStar -= self.dStarModificator['Book']
 
     def __computeElementary(self):
         self.dElementary['fire'] = self.__computeTwoCaracAndDivisor(self.iStrength, self.iCharism, 2)
