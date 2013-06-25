@@ -162,6 +162,20 @@ class Character:
     def getTalent(self):
         return self.iTalent
 
+    # All the Counters
+
+    ##########################
+    ####### Manage cash ######
+    ##########################
+    def setMoney(self, iMoney):
+        self.iMoney = iMoney
+
+    def addMoney(self, iMoneyToAdd):
+        self.iMoney += iMoneyToAdd
+
+    def subMoney(self, iMoneyToSub):
+        self.iMoney -= iMoneyToSub
+
 
     # Caracteristic compute
     def __computeLifeMax(self):
