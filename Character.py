@@ -42,7 +42,7 @@ class Character:
         if sCarac not in self.dStarModificator:
             raise AssertionError('star modificator must be in '+ ','.join(self.dStarModificator.keys()))
         if iValue < -3 or iValue > 0:
-            raise ArithmeticError(' value must be between -3 and 0')
+            raise ArithmeticError('star '+sCarac+' modificator value must be between -3 and 0')
         self.dStarModificator[sCarac] = iValue
 
     def getName(self):
@@ -234,8 +234,8 @@ class Character:
     def __computeTalent(self):
         self.iTalent = self.__computeTwoCaracAndDivisor(self.iMuse, self.iArdor, 4)
 
-    def __computeTwoCaracAndDivisor(self, iFirstCarac, iSecond, iDivisor):
-        return math.floor((iFirstCarac + iSecond) / iDivisor)
+    def __computeTwoCaracAndDivisor(self, iFirstCarac, iSecondCaracteristic, iDivisor):
+        return math.floor((iFirstCarac + iSecondCaracteristic) / iDivisor)
 
 ###############################
 ##  DISPLAYER FOR CHARACTER  ##
@@ -264,11 +264,11 @@ class CharacterDisplayer:
 
         sName = self.oCharacter.getName()
         if None != sName:
-            self.displayMember('Name', sName)
+            self.__displayMember('Name', sName)
 
         iAge = self.oCharacter.getAge()
         if None != iAge:
-            self.displayMember('Age', iAge)
+            self.__displayMember('Age', iAge)
 
 
     def displayMainCaracteristicts(self):
@@ -325,6 +325,6 @@ class CharacterDisplayer:
         print sDisplay
 
     # Display a description
-    def displayMember(self, sMemberName, mMemberValue, sColor='white'):
+    def __displayMember(self, sMemberName, mMemberValue, sColor='white'):
         print colored(sMemberName, 'green', None, ['underline']) + ' : '+ colored(mMemberValue, sColor)
 
