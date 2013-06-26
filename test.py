@@ -14,7 +14,9 @@ oCharacter.setStamina(13)
 oCharacter.setWill(13)
 oCharacter.setDiscernment(14)
 oCharacter.setMental(12)
-oCharacter.setStarModificator('Book', 1)
+oCharacter.setStarModificator('Book', 0)
+
+oCharacter.addMoney(20)
 oCharacter.compute()
 oCharacterDisplayer = CharacterDisplayer()
 

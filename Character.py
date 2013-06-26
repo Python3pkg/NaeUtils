@@ -36,6 +36,11 @@ class Character:
 
         # Counters
         self.iMoney = 0
+        self.iCurrentLife = 0
+
+        # Modificator
+        self.iTalentPointUsed = 0
+        self.iSpiritPointUsed = 0
 
     # Set a start modificator. If set, the star
     def setStarModificator(self, sCarac, iValue):
@@ -74,6 +79,9 @@ class Character:
         self.__computeSpirit()
         self.__computeHealing()
         self.__computeTalent()
+        # Counter
+        self.__initLife()
+        self.__initNaergy()
 
 
     # base
@@ -149,9 +157,6 @@ class Character:
 
     # traits
 
-    def getSpirit(self):
-        return self.iSpirit
-
     def getLifeMax(self):
         return self.iLifeMax
 
@@ -164,14 +169,31 @@ class Character:
     def getWatering(self):
         return self.iWatering
 
-    def getTalent(self):
-        return self.iTalent
+    def getTalent(self, bWithModificator=True):
+        if bWithModificator:
+            iTalent = self.iTalent - self.iTalentPointUsed
+        else:
+            iTalent = self.iTalent
+        return iTalent
+
+    def getSpirit(self, bWithModificator=True):
+        if bWithModificator:
+            iSpirit = self.iSpirit - self.iSpiritPointUsed
+        else:
+            iSpirit = self.iSpirit
+        return iSpirit
+
 
     # All the Counters
 
     ##########################
-    ####### Manage cash ######
+    ####### Counters #########
     ##########################
+
+    ## Money money
+    def getMoney(self):
+        return self.iMoney
+
     def setMoney(self, iMoney):
         self.iMoney = iMoney
 
@@ -180,6 +202,45 @@ class Character:
 
     def subMoney(self, iMoneyToSub):
         self.iMoney -= iMoneyToSub
+
+    ## Life, oooh life
+    def getLife(self):
+        return self.iCurrentLife;
+
+    def setLife(self, iCurrentLife):
+        self.iCurrentLife = iCurrentLife
+
+    def addLife(self, iLifeToAdd):
+        self.iCurrentLife += iLifeToAdd
+
+    def subLife(self, iLifeToSub):
+        self.iCurrentLife -= iLifeToSub
+
+    ## Naergy, what, power!
+    def getNaergy(self):
+        return self.iCurrentNaergy
+
+    def setNaergy(self, iCurrentNaergy):
+        self.iCurrentNaergy = iCurrentNaergy
+
+    def addNaergy(self, iNaergyToAdd):
+        self.iCurrentNaergy += iNaergyToAdd
+
+    def subLife(self, iNaergyToSub):
+        self.iCurrentNaergy -= iNaergyToSub
+
+    ############ Modificator #############
+    def useTalentPoint(self, iHowMany):
+        iCurrentTalent = self.getTalent(True)
+        if iCurrentTalent < 1 or (iCurrentTalent - (self.iTalentPointUsed + iHowMany) < 1):
+            ArithmeticError('You cant use talent point anymore, your talent tank is empty')
+        self.iTalentPointUsed += iHowMany
+
+    def useSpiritPoint(self, iHowMany):
+        iCurrentSpirit = self.getSpirit(True)
+        if iCurrentSpirit < 1 or (iCurrentSpirit - (self.iSpiritPointUsed + iHowMany) < 1):
+            ArithmeticError('You cant use talent point anymore, your talent tank is empty')
+        self.iSpiritPointUsed += iHowMany
 
     def __computeArdor(self):
         self.iArdor = self.__computeTwoCaracAndDivisor(self.iDiscernment, self.iWill, 2)
@@ -237,6 +298,15 @@ class Character:
     def __computeTwoCaracAndDivisor(self, iFirstCarac, iSecondCaracteristic, iDivisor):
         return math.floor((iFirstCarac + iSecondCaracteristic) / iDivisor)
 
+    def __initLife(self):
+        self.iCurrentLife = self.iLifeMax
+        assert isinstance(self.iCurrentLife, int) and self.iCurrentLife > 0
+    
+    def __initNaergy(self):
+        self.iCurrentNaergy = self.iNaergyMax
+        assert isinstance(self.iCurrentNaergy, int) and self.iCurrentLife > 0
+
+
 ###############################
 ##  DISPLAYER FOR CHARACTER  ##
 ###############################
@@ -258,6 +328,7 @@ class CharacterDisplayer:
         self.displayMainCaracteristicts()
         self.displaySecondaryCaracteristics()
         self.displayTraitCaracteristics()
+        self.displayCounters()
 
     def displayMainDescription(self):
         self.__displayTitle('Main description')
@@ -314,6 +385,12 @@ class CharacterDisplayer:
             ['Watering', oCharacter.getWatering()]
         ]
         self.__displayCaracList(lRows)
+
+    def displayCounters(self):
+        self.__displayTitle('Counter')
+        oCharacter = self.oCharacter
+        self.__displayMember('Money', str(oCharacter.getMoney()) + ' t.')
+        self.__displayMember('Life', str(oCharacter.getLife()))
 
     def __displayTitle(self, sTitle):
         print colored(sTitle, None, None, ['bold', 'underline']) + ' : '
