@@ -230,11 +230,24 @@ class Character:
         self.iCurrentNaergy -= iNaergyToSub
 
     ############ Modificator #############
+
+    def setTalentPoint(self, iHowMany):
+        self.iTalentPointUsed = iHowMany
+
     def useTalentPoint(self, iHowMany):
         iCurrentTalent = self.getTalent(True)
         if iCurrentTalent < 1 or (iCurrentTalent - (self.iTalentPointUsed + iHowMany) < 1):
             ArithmeticError('You cant use talent point anymore, your talent tank is empty')
         self.iTalentPointUsed += iHowMany
+
+    def gainTalentPoint(self, iHowMany):
+        self.iTalentPointUsed -= iHowMany
+        if 0 >= self.iTalentPointUsed:
+            self.iTalentPointUsed = 0
+
+    def setSpiritPoint(self, iHowMany):
+        self.iSpiritPointUsed = iHowMany
+
 
     def useSpiritPoint(self, iHowMany):
         iCurrentSpirit = self.getSpirit(True)
@@ -242,6 +255,13 @@ class Character:
             ArithmeticError('You cant use talent point anymore, your talent tank is empty')
         self.iSpiritPointUsed += iHowMany
 
+    def gainSpiritPoint(self, iHowMany):
+        self.iSpiritPointUsed -= iHowMany
+        if 0 >= self.iSpiritPointUsed:
+            self.iSpiritPointUsed = 0
+
+
+    ############ Compute #############
     def __computeArdor(self):
         self.iArdor = self.__computeTwoCaracAndDivisor(self.iDiscernment, self.iWill, 2)
         self.iArdor += self.dStarModificator['Ardor']
