@@ -5,6 +5,9 @@ class Character:
 
     def __init__(self):
 
+        # a key to retrieve it
+        self.iId = None
+
         # character description
         self.sName = None
         self.iAge = None
