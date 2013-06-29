@@ -8,6 +8,9 @@ class Character:
         # a key to retrieve it
         self.iId = None
 
+        # the type of the character
+        self.sType = None
+
         # character description
         self.sName = None
         self.iAge = None
@@ -45,13 +48,13 @@ class Character:
         self.iTalentPointUsed = 0
         self.iSpiritPointUsed = 0
 
-    # Set a start modificator. If set, the star
-    def setStarModificator(self, sCarac, iValue):
-        if sCarac not in self.dStarModificator:
-            raise AssertionError('star modificator must be in '+ ','.join(self.dStarModificator.keys()))
-        if iValue < -3 or iValue > 0:
-            raise ArithmeticError('star '+sCarac+' modificator value must be between -3 and 0')
-        self.dStarModificator[sCarac] = iValue
+    def setType(self, sType):
+        if 'pnj' != sType and 'pj' != 'pj':
+            raise Exception('type must be pj or pnj')
+        self.sType = sType
+
+    def getType(self):
+        return self.sType
 
     def getName(self):
         return self.sName
@@ -263,6 +266,13 @@ class Character:
         if 0 >= self.iSpiritPointUsed:
             self.iSpiritPointUsed = 0
 
+    # Set a star modificator. If set, the star will be augmented
+    def setStarModificator(self, sCarac, iValue):
+        if sCarac not in self.dStarModificator:
+            raise AssertionError('star modificator must be in '+ ','.join(self.dStarModificator.keys()))
+        if iValue < -3 or iValue > 0:
+            raise ArithmeticError('star '+sCarac+' modificator value must be between -3 and 0')
+        self.dStarModificator[sCarac] = iValue
 
     ############ Compute #############
     def __computeArdor(self):

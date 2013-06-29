@@ -17,6 +17,9 @@ class CharacterSaver:
             if 0 == fMethod():
                 raise Exception('Unable to save a character without '+sCharac)
 
+        if None == oCharacter.getType():
+            raise Exception('Please set the type of the character, none submitted')
+
         oCharacterModel = Character()
         if None != oCharacter.iId:
             oCharacterModel.set_id(oCharacter.iId)
@@ -46,6 +49,9 @@ class Character(BaseModel):
     # main description
     name = CharField(max_length=60)
     age = IntegerField()
+
+    # type
+    type = CharField(max_length=10)
 
     # main caracteristics
     strength = IntegerField()
