@@ -75,6 +75,10 @@ class CharacterDatabase:
         oCharacterEntity.setTalentPoint(oCharacterModel.talentpointused)
         oCharacterEntity.setSpiritPoint(oCharacterModel.spiritpointused)
 
+        oCharacterEntity.setName(oCharacterModel.name)
+        oCharacterEntity.setId(oCharacterModel.id)
+        oCharacterEntity.setAge(oCharacterModel.age)
+
         oCharacterEntity.compute()
 
         return oCharacterEntity

@@ -26,7 +26,7 @@ from Database import CharacterDatabase
 oCharacterDisplayer = CharacterDisplayer()
 
 oSaver = CharacterDatabase()
-oCharacters = oSaver.load()
+oCharacters = oSaver.load(1)
 for oEachCharacter in oCharacters:
     oCharacterDisplayer.setCharacter(oEachCharacter)
     oCharacterDisplayer.display()

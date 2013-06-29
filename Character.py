@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import math
 
 # A character in the Nae world
@@ -47,6 +50,12 @@ class Character:
         # Modificator
         self.iTalentPointUsed = 0
         self.iSpiritPointUsed = 0
+
+    def getId(self):
+        return self.iId
+
+    def setId(self, iId):
+        self.iId = iId
 
     def setType(self, sType):
         if 'pnj' != sType and 'pj' != 'pj':
@@ -371,11 +380,15 @@ class CharacterDisplayer:
     def displayMainDescription(self):
         self.__displayTitle('Main description')
 
-        sName = self.oCharacter.getName()
+        oCharacter = self.oCharacter
+        if None != oCharacter.getId():
+            self.__displayMember('Id', oCharacter.getId())
+
+        sName = oCharacter.getName()
         if None != sName:
             self.__displayMember('Name', sName)
 
-        iAge = self.oCharacter.getAge()
+        iAge = oCharacter.getAge()
         if None != iAge:
             self.__displayMember('Age', iAge)
 
@@ -384,14 +397,14 @@ class CharacterDisplayer:
         self.__displayTitle('Caracteristics (main)')
         oCharacter = self.oCharacter
         lRows = [
-            ['Strength', oCharacter.getStrength()],
-            ['Stamina', oCharacter.getStamina()],
-            ['Agility', oCharacter.getAgility()],
-            ['Discernment', oCharacter.getDiscernment()],
+            ['Force', oCharacter.getStrength()],
+            ['Endurance', oCharacter.getStamina()],
+            ['Agilité', oCharacter.getAgility()],
+            ['Discernement', oCharacter.getDiscernment()],
             ['Mental', oCharacter.getMental()],
-            ['Instinct', oCharacter.getInstinct()],
-            ['Charism', oCharacter.getCharism()],
-            ['Will', oCharacter.getWill()]
+            ['Instint', oCharacter.getInstinct()],
+            ['Charisme', oCharacter.getCharism()],
+            ['Volonté', oCharacter.getWill()]
         ]
         self.__displayCaracList(lRows)
 
