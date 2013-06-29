@@ -3,9 +3,28 @@ __author__ = 'julien'
 from peewee import *
 from Character import Character as CharacterEntity
 
-class CharacterSaver:
+class CharacterDatabase:
 
     ###### Save the character in base ######
+
+
+    def load(self, iIdOfCharacterToLoad=None):
+        pass
+        oCharacterModel = self.__getCharacterModel()
+
+        oModel = oCharacterModel.select()
+        if None != iIdOfCharacterToLoad:
+            oResult = oModel.where(Character.id == iIdOfCharacterToLoad)
+        else:
+            oResult = oModel
+
+        aListOfCharacter = []
+        for oEachModel in oResult:
+            oEachEntity = self.__transformModelIntoEntity(oEachModel)
+            aListOfCharacter.append(oEachEntity)
+
+        return aListOfCharacter
+
 
     def save(self, oCharacter):
         """
@@ -54,7 +73,9 @@ class CharacterSaver:
         oCharacterEntity.setType(oCharacterModel.type)
         oCharacterEntity.setLife(oCharacterModel.life)
         oCharacterEntity.setTalentPoint(oCharacterModel.talentpointused)
-        oCharacterEntity.setSpiritPoint(oCharacterModel.spirittalentpointused)
+        oCharacterEntity.setSpiritPoint(oCharacterModel.spiritpointused)
+
+        oCharacterEntity.compute()
 
         return oCharacterEntity
 
