@@ -56,6 +56,11 @@ class Character:
     def getType(self):
         return self.sType
 
+    def setType(self, sType):
+        if sType not in ['pj', 'pnj']:
+            raise Exception('Type is not autorized')
+        self.sType = sType
+
     def getName(self):
         return self.sName
 
@@ -192,10 +197,6 @@ class Character:
 
     # All the Counters
 
-    ##########################
-    ####### Counters #########
-    ##########################
-
     ## Money money
     def getMoney(self):
         return self.iMoney
@@ -235,8 +236,6 @@ class Character:
     def subLife(self, iNaergyToSub):
         self.iCurrentNaergy -= iNaergyToSub
 
-    ############ Modificator #############
-
     def setTalentPoint(self, iHowMany):
         self.iTalentPointUsed = iHowMany
 
@@ -250,6 +249,9 @@ class Character:
         self.iTalentPointUsed -= iHowMany
         if 0 >= self.iTalentPointUsed:
             self.iTalentPointUsed = 0
+
+    def getTalentPoint(self):
+        return self.iTalentPointUsed
 
     def setSpiritPoint(self, iHowMany):
         self.iSpiritPointUsed = iHowMany
@@ -265,6 +267,9 @@ class Character:
         self.iSpiritPointUsed -= iHowMany
         if 0 >= self.iSpiritPointUsed:
             self.iSpiritPointUsed = 0
+
+    def getSpiritPoint(self):
+        return self.iSpiritPointUsed
 
     # Set a star modificator. If set, the star will be augmented
     def setStarModificator(self, sCarac, iValue):
