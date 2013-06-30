@@ -394,7 +394,7 @@ class CharacterDisplayer:
 
 
     def displayMainCaracteristicts(self):
-        self.__displayTitle('Caracteristics (main)')
+        self.__displayTitle('Caractéristiques (main)')
         oCharacter = self.oCharacter
         lRows = [
             ['Force', oCharacter.getStrength()],
@@ -409,39 +409,39 @@ class CharacterDisplayer:
         self.__displayCaracList(lRows)
 
     def displaySecondaryCaracteristics(self):
-        self.__displayTitle('Caracteristics (secondary)')
+        self.__displayTitle('Caractéristiques (secondary)')
         oCharacter = self.oCharacter
         lRows = [
-            ['Ardor', oCharacter.getArdor()],
-            ['Reflex', oCharacter.getReflex()],
+            ['Ardeur', oCharacter.getArdor()],
+            ['Réflexes', oCharacter.getReflex()],
             ['Muse', oCharacter.getMuse()],
-            ['Book', oCharacter.getBook()],
-            ['Star', oCharacter.getStar()],
-            ['Element-Fire', oCharacter.getElementary('fire')],
-            ['Element-Water', oCharacter.getElementary('water')],
-            ['Element-Earth', oCharacter.getElementary('earth')],
+            ['Livres', oCharacter.getBook()],
+            ['Étoile', oCharacter.getStar()],
+            ['Element-Feu', oCharacter.getElementary('fire')],
+            ['Element-Eau', oCharacter.getElementary('water')],
+            ['Element-Terre', oCharacter.getElementary('earth')],
             ['Element-Air', oCharacter.getElementary('air')],
         ]
         self.__displayCaracList(lRows)
 
     def displayTraitCaracteristics(self):
-        self.__displayTitle('Caracteristics (traits)')
+        self.__displayTitle('Caractéristiques (traits)')
         oCharacter = self.oCharacter
         lRows = [
             ['Talent', oCharacter.getTalent()],
-            ['Spirit', oCharacter.getSpirit()],
-            ['Life Maximum', oCharacter.getLifeMax()],
-            ['Naergy Maximum', oCharacter.getNaergyMax()],
-            ['Healing', oCharacter.getHealing()],
-            ['Watering', oCharacter.getWatering()]
+            ['Panache', oCharacter.getSpirit()],
+            ['Vie Maximum', oCharacter.getLifeMax()],
+            ['Naergie Maximum', oCharacter.getNaergyMax()],
+            ['Guérision', oCharacter.getHealing()],
+            ['Abreuvement', oCharacter.getWatering()]
         ]
         self.__displayCaracList(lRows)
 
     def displayCounters(self):
-        self.__displayTitle('Counter')
+        self.__displayTitle('Compteurs')
         oCharacter = self.oCharacter
-        self.__displayMember('Money', str(oCharacter.getMoney()) + ' t.')
-        self.__displayMember('Life', str(oCharacter.getLife()))
+        self.__displayMember('Argent', str(oCharacter.getMoney()) + ' t.')
+        self.__displayMember('Vie', str(oCharacter.getLife()))
 
     def __displayTitle(self, sTitle):
         print colored(sTitle, None, None, ['bold', 'underline']) + ' : '

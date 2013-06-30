@@ -29,7 +29,13 @@ oSaver = CharacterDatabase()
 oCharacters = oSaver.load(1)
 for oEachCharacter in oCharacters:
     oCharacterDisplayer.setCharacter(oEachCharacter)
-    oCharacterDisplayer.display()
+    #oCharacterDisplayer.display()
+
+
+from Ui import Menu
+
+oMenu = Menu()
+oMenu.run()
 #oSaver.save(oCharacter)
 
 #oCharacterDisplayer.display()

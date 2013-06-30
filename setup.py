@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='NaeUtils',
     version='',
-    install_requires = ['texttable', 'termcolor',  'peewee'],
+    install_requires = ['texttable', 'termcolor',  'peewee', 'urwid'],
     packages=[],
     url='',
     license='',
