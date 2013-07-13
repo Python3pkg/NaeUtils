@@ -4,17 +4,41 @@ __author__ = 'julien'
 
 
 import urwid
+from Character import Character as CharacterEntity
+from Database import CharacterDatabase
 
 class Menu:
 
     def __init__(self):
         self.oMainMenu = None
 
+    # Draw a list of each character
+    def drawCharacterListMenu(self, oCharacterList):
+        assert isinstance(oCharacterList, list)
+        aList = []
+        for oEachCharacter in oCharacterList:
+            assert isinstance(oEachCharacter, CharacterEntity)
+            sLabelForCharacterListChoice = str(oEachCharacter.getId()) + '. ' + oEachCharacter.getName()
+            aList.append(self.drawEachButton(sLabelForCharacterListChoice, self.openCharacterStyleSheet))
+        oMenu = self.drawEachMenu('Liste des personnages', aList)
+
+        self.oMainMenu.open_box(oMenu)
+
+    # Open a character stylesheet
+    def openCharacterStyleSheet(self, oButton):
+        pass
+
+    def openCharacterList(self, oButton):
+        oDb = CharacterDatabase()
+        oListOfCharacter = oDb.load()
+        self.drawCharacterListMenu(oListOfCharacter)
+
+
     def returnMenuConfiguration(self):
         return self.drawEachMenu(u'Nae', [
             self.drawEachSubMenu(u'Personnages', [
                 self.drawEachSubMenu(u'Gestion', [
-                    self.drawEachButton(u'Liste des personnages', self.item_chosen),
+                    self.drawEachButton(u'Liste des personnages', self.openCharacterList),
                     self.drawEachButton(u'Créer un personnage', self.item_chosen),
                     self.drawEachButton(u'Générer un personnage', self.item_chosen),
                     ]),
@@ -38,6 +62,7 @@ class Menu:
         body = [urwid.Text(title), urwid.Divider()]
         body.extend(choices)
         return urwid.ListBox(urwid.SimpleFocusListWalker(body))
+
     def drawEachSubMenu(self, caption, choices):
         contents = self.drawEachMenu(caption, choices)
         def open_menu(button):
@@ -60,7 +85,7 @@ class Menu:
 
 
 class CascadingBoxes(urwid.WidgetPlaceholder):
-    max_box_levels = 4
+    max_box_levels = 5
 
     def __init__(self, box):
         super(CascadingBoxes, self).__init__(urwid.SolidFill(u' '))
