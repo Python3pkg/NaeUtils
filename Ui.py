@@ -3,7 +3,7 @@
 __author__ = 'julien'
 
 
-import urwid
+import urwid, pprint
 from Character import Character as CharacterEntity
 from Database import CharacterDatabase
 
@@ -11,6 +11,7 @@ class Menu:
 
     def __init__(self):
         self.oMainMenu = None
+        self.oCharacterDb = None
 
     # Draw a list of each character
     def drawCharacterListMenu(self, oCharacterList):
@@ -19,17 +20,27 @@ class Menu:
         for oEachCharacter in oCharacterList:
             assert isinstance(oEachCharacter, CharacterEntity)
             sLabelForCharacterListChoice = str(oEachCharacter.getId()) + '. ' + oEachCharacter.getName()
-            aList.append(self.drawEachButton(sLabelForCharacterListChoice, self.openCharacterStyleSheet))
+            oButton = self.drawEachButton(sLabelForCharacterListChoice, self.openCharacterStyleSheet, oEachCharacter.getId())
+            oButton.characterId = oEachCharacter.getId()
+            aList.append(oButton)
         oMenu = self.drawEachMenu('Liste des personnages', aList)
 
         self.oMainMenu.open_box(oMenu)
 
     # Open a character stylesheet
     def openCharacterStyleSheet(self, oButton):
-        pass
+        iCharacterId = oButton.user_data
+        assert isinstance(iCharacterId, int)
+        oDb = self.__getCharacterDb()
+        aListOfCharacter = oDb.load(iCharacterId)
+        if 0 == len(aListOfCharacter):
+            raise Exception('unable to find character')
+
+        print "Found character :" + aListOfCharacter[0].getName()
+
 
     def openCharacterList(self, oButton):
-        oDb = CharacterDatabase()
+        oDb = self.__getCharacterDb()
         oListOfCharacter = oDb.load()
         self.drawCharacterListMenu(oListOfCharacter)
 
@@ -53,8 +64,9 @@ class Menu:
         oMainBody = [urwid.Text(sTitle), urwid.Divider()]
 
 
-    def drawEachButton(self, sCaption, fCallback):
-        oButton = urwid.Button(sCaption)
+    def drawEachButton(self, sCaption, fCallback, sUserData=[]):
+        oButton = urwid.Button(sCaption, user_data=sUserData)
+        oButton.user_data = sUserData
         urwid.connect_signal(oButton, 'click', fCallback)
         return urwid.AttrMap(oButton, None, focus_map='reversed')
 
@@ -81,6 +93,11 @@ class Menu:
     def run(self):
         self.oMainMenu = CascadingBoxes(self.returnMenuConfiguration())
         urwid.MainLoop(self.oMainMenu, palette=[('reversed', 'standout', '')]).run()
+
+    def __getCharacterDb(self):
+        if None == self.oCharacterDb:
+            self.oCharacterDb = CharacterDatabase()
+        return self.oCharacterDb
 
 
 
