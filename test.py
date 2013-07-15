@@ -36,6 +36,7 @@ from Ui import Menu
 
 oMenu = Menu()
 oMenu.run()
+
 #oSaver.save(oCharacter)
 
 #oCharacterDisplayer.display()
