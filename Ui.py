@@ -112,7 +112,7 @@ class Menu:
         self.oMainMenu = CascadingBoxes(self.returnMenuConfiguration())
         aPalette = [
             ('reversed', 'standout', ''),
-            ('characterName', 'white,underline,bold', 'dark blue'),
+            ('characterName', 'white,bold', 'dark blue'),
             ('sectionName', 'black, bold', 'white')
         ]
         urwid.MainLoop(self.oMainMenu, palette=aPalette).run()
@@ -162,7 +162,11 @@ class CharacterStylesheet:
     def build(self):
         oMainInfos = self.buildMainInfos()
         oMainCharacteristics = self.buildMainCharacteristics()
-        oMainPile = urwid.Pile([oMainInfos, oMainCharacteristics, self.buildSecondaryCharacteristics()])
+        oTraits = self.buildTraits()
+        oSecondaryCaracteristics = self.buildSecondaryCharacteristics()
+        oMainPile = urwid.Pile(
+            [oMainInfos, oMainCharacteristics, oSecondaryCaracteristics, oTraits, self.buildCounter()]
+        )
         return oMainPile
 
 
@@ -186,8 +190,7 @@ class CharacterStylesheet:
             ['Volonté', oCharacter.getWill()],
             ['Instinct', oCharacter.getInstinct()]
         ]
-
-        return self.__buildCharacteristics('Caractéristiques primaires', aListToShow)
+        return self.__buildCaracteristics('Caractéristiques primaires', aListToShow)
 
     def buildSecondaryCharacteristics(self):
         oCharacter = self.oCharacter
@@ -202,10 +205,31 @@ class CharacterStylesheet:
             ['Element-Terre', oCharacter.getElementary('earth')],
             ['Element-Air', oCharacter.getElementary('air')],
         ]
-        return self.__buildCharacteristics('Caractéristiques secondaires', aListToShow)
+        return self.__buildCaracteristics('Caractéristiques secondaires', aListToShow)
 
+    def buildTraits(self):
+        oCharacter = self.oCharacter
+        aTraits = [
+            ['Talent', oCharacter.getTalent()],
+            ['Panache', oCharacter.getSpirit()],
+            ['Vie Maximum', oCharacter.getLifeMax()],
+            ['Naergie Maximum', oCharacter.getNaergyMax()],
+            ['Guérision', oCharacter.getHealing()],
+            ['Abreuvement', oCharacter.getWatering()]
+        ]
+        return self.__buildCaracteristics('Traits', aTraits)
 
-    def __buildCharacteristics(self, sCaption, aListOfNameAndValues):
+    def buildCounter(self):
+        oCharacter = self.oCharacter
+        aCounters = [
+            ['Argent', oCharacter.getMoney()],
+            ['Vie', str(oCharacter.getLife()) + '/' + str(oCharacter.getLifeMax())],
+            ['Naergie', str(oCharacter.getNaergy()) +  '/' + str(oCharacter.getNaergyMax())]
+        ]
+        return self.__buildCaracteristics('Compteurs', aCounters)
+
+    # Build a section of caracteristics
+    def __buildCaracteristics(self, sCaption, aListOfNameAndValues):
 
         aNames = []
         aValues = []
@@ -225,9 +249,10 @@ class CharacterStylesheet:
         oCharacter = self.oCharacter
         aListOfValues = [oCharacter.getStrength(), oCharacter.getAgility(), oCharacter.getMental(), oCharacter.getCharism(), oCharacter.getDiscernment(), oCharacter.getStamina(), oCharacter.getWill(), oCharacter.getInstinct()]
         for iValues in aValues:
-            floatPart = iValues-int(iValues)
-            if floatPart == 0:
-                iValues = int(iValues)
+            if not isinstance(iValues, str):
+                floatPart = iValues-int(iValues)
+                if floatPart == 0:
+                    iValues = int(iValues)
             aUrwidValues.append(urwid.Text(str(iValues)))
         aUrwidValues.append(urwid.Divider('-'))
         oValueList = urwid.ListBox(aUrwidValues)
