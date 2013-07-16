@@ -153,6 +153,8 @@ class CascadingBoxes(urwid.WidgetPlaceholder):
             return super(CascadingBoxes, self).keypress(size, key)
 
 
+import types
+
 class CharacterStylesheet:
 
     def __init__(self, oCharacter):
@@ -164,8 +166,10 @@ class CharacterStylesheet:
         oMainCharacteristics = self.buildMainCharacteristics()
         oTraits = self.buildTraits()
         oSecondaryCaracteristics = self.buildSecondaryCharacteristics()
+        oCounters = self.buildCounter()
         oMainPile = urwid.Pile(
-            [oMainInfos, oMainCharacteristics, oSecondaryCaracteristics, oTraits, self.buildCounter()]
+            [('fixed', 3, oMainInfos), ('fixed', 12, oMainCharacteristics), ('fixed', 13, oSecondaryCaracteristics), ('fixed', 10, oTraits),
+             ('weight', 7, oCounters)]
         )
         return oMainPile
 
@@ -222,11 +226,15 @@ class CharacterStylesheet:
     def buildCounter(self):
         oCharacter = self.oCharacter
         aCounters = [
-            ['Argent', oCharacter.getMoney()],
-            ['Vie', str(oCharacter.getLife()) + '/' + str(oCharacter.getLifeMax())],
-            ['Naergie', str(oCharacter.getNaergy()) +  '/' + str(oCharacter.getNaergyMax())]
+            ['Argent', oCharacter.getMoney(), self.modifyCharacter],
+            ['Vie', (oCharacter.getLife(),oCharacter.getLifeMax()), self.modifyCharacter],
+            ['Naergie', (oCharacter.getNaergy(), oCharacter.getNaergyMax()), self.modifyCharacter]
         ]
         return self.__buildCaracteristics('Compteurs', aCounters)
+
+    def modifyCharacter(self, eEvent):
+        print eEvent
+
 
     # Build a section of caracteristics
     def __buildCaracteristics(self, sCaption, aListOfNameAndValues):
@@ -235,7 +243,10 @@ class CharacterStylesheet:
         aValues = []
         for lTuples in aListOfNameAndValues:
             aNames.append(lTuples[0])
-            aValues.append(lTuples[1])
+            if len(lTuples) == 3:
+                aValues.append((lTuples[1], lTuples[2]))
+            else:
+                aValues.append(lTuples[1])
 
         oCaption = urwid.Text(('sectionName', sCaption))
 
@@ -246,16 +257,56 @@ class CharacterStylesheet:
         oNameList = urwid.ListBox(aUrwidNames)
 
         aUrwidValues = [urwid.Text(''), urwid.Divider('-')]
-        oCharacter = self.oCharacter
-        aListOfValues = [oCharacter.getStrength(), oCharacter.getAgility(), oCharacter.getMental(), oCharacter.getCharism(), oCharacter.getDiscernment(), oCharacter.getStamina(), oCharacter.getWill(), oCharacter.getInstinct()]
+
+
         for iValues in aValues:
-            if not isinstance(iValues, str):
-                floatPart = iValues-int(iValues)
+
+            if isinstance(iValues, types.TupleType):
+                iFinalValue, fCallback = iValues
+            else:
+                iFinalValue = iValues
+
+            if isinstance(iFinalValue, types.TupleType) and len(iFinalValue) == 2:
+                iFinalValue, iMax = iFinalValue
+
+            if not isinstance(iFinalValue, str):
+                floatPart = iFinalValue-int(iFinalValue)
                 if floatPart == 0:
-                    iValues = int(iValues)
-            aUrwidValues.append(urwid.Text(str(iValues)))
+                    iFinalValue = int(iFinalValue)
+
+            if 'fCallback' in locals():
+                if 'iMax' in locals():
+                    oTextWidget = CharacterGauge(iFinalValue, iMax)
+                else:
+                    oTextWidget = urwid.Button(str(iFinalValue))
+            else:
+                oTextWidget = urwid.Text(str(iFinalValue))
+
+            aUrwidValues.append(oTextWidget)
+
         aUrwidValues.append(urwid.Divider('-'))
         oValueList = urwid.ListBox(aUrwidValues)
 
-        return urwid.Columns([oNameList, oValueList])
+        return urwid.Columns([('fixed', 40,  oNameList), ('fixed', 9, oValueList)])
+
+
+class CharacterGauge(urwid.Button):
+
+    def __computeGauge(self):
+        return str(self.iCounter) + '/' + str(self.iMax)
+
+    def __init__(self, iCounter, iMax):
+        self.iCounter = iCounter
+        self.iMax = iMax
+        super(CharacterGauge, self).__init__(self.__computeGauge())
+
+
+    def keypress(self, size, key):
+        if key == 'left':
+            self.iCounter-=1
+            self.set_label(self.__computeGauge())
+        elif key == 'right':
+            self.iCounter+=1
+            self.set_label(self.__computeGauge())
+
 
