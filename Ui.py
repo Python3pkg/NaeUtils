@@ -287,7 +287,7 @@ class CharacterStylesheet:
         aUrwidValues.append(urwid.Divider('-'))
         oValueList = urwid.ListBox(aUrwidValues)
 
-        return urwid.Columns([('fixed', 40,  oNameList), ('fixed', 9, oValueList)])
+        return urwid.Columns([('fixed', 40, oNameList), ('fixed', 9, oValueList)])
 
 
 class CharacterGauge(urwid.Button):
