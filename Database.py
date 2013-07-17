@@ -9,7 +9,7 @@ class CharacterDatabase:
 
 
     def load(self, iIdOfCharacterToLoad=None):
-        pass
+	self.__checkIfBaseExistsAndCreateItIfNot()
         oCharacterModel = self.__getCharacterModel()
 
         oModel = oCharacterModel.select()
