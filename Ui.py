@@ -196,13 +196,13 @@ class CharacterStylesheet(urwid.WidgetPlaceholder):
                 'callback': 'setStrength',
                 'character':  oCharacter
             }],
-            ['Agilité', oCharacter.getAgility()],
-            ['Mental', oCharacter.getMental()],
-            ['Charisme', oCharacter.getCharism()],
-            ['Discernement', oCharacter.getDiscernment()],
-            ['Endurance', oCharacter.getStamina()],
-            ['Volonté', oCharacter.getWill()],
-            ['Instinct', oCharacter.getInstinct()]
+            ['Agilité', {'value': oCharacter.getAgility(), 'callback': 'setAgility', 'character': oCharacter}],
+            ['Mental', {'value': oCharacter.getMental(), 'callback': 'setMental', 'character': oCharacter}],
+            ['Charisme', {'value': oCharacter.getCharism(), 'callback': 'setCharism', 'character': oCharacter}],
+            ['Discernement', {'value' : oCharacter.getDiscernment(), 'callback': 'setDiscernment', 'character': oCharacter}],
+            ['Endurance', {'value': oCharacter.getStamina(), 'callback': 'setStamina', 'character': oCharacter}],
+            ['Volonté', {'value': oCharacter.getWill(), 'callback': 'setWill', 'character': oCharacter}],
+            ['Instinct', {'value': oCharacter.getInstinct(), 'callback': 'setInstinct', 'character': oCharacter}]
         ]
         return self.__buildCaracteristics('Caractéristiques primaires', aListToShow)
 
@@ -283,6 +283,9 @@ class CharacterStylesheet(urwid.WidgetPlaceholder):
             else:
                 dFinalValue = iValues
 
+            if (dFinalValue['value'] - int(dFinalValue['value'])) == 0:
+                dFinalValue['value'] = int(dFinalValue['value'])
+
             # Callback is in
             if 'callback' in dFinalValue.keys():
                 if 'max' in dFinalValue.keys():
@@ -304,10 +307,14 @@ class CharacterStylesheet(urwid.WidgetPlaceholder):
 class CharacterGauge(urwid.Button):
 
     def __computeGauge(self):
+        iCounter = self.iCounter
+        if (iCounter - int(iCounter)) == 0:
+            iCounter = int(iCounter)
+        sGetCounterValue = str(iCounter)
         if None == self.iMax:
-            return str(self.iCounter)
+            return sGetCounterValue
         else:
-            return str(self.iCounter) + '/' + str(self.iMax)
+            return sGetCounterValue + '/' + str(self.iMax)
 
     def __init__(self, oCharacterStylesheet, iCounter, fCallback = None, oCharacter = None, iMax = None):
         self.oCharacterStylesheet = oCharacterStylesheet
