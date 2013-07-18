@@ -51,10 +51,8 @@ class Menu:
 #        )
 
         oCharacterDisplayer = CharacterStylesheet(oCurrentCharacter)
-        oMainCharacteristics = oCharacterDisplayer.build()
-
-
-        self.oMainMenu.open_box(oMainCharacteristics, width=('relative', 120), height=('relative', 120))
+        self.oMainMenu.open_box(oCharacterDisplayer, width=('relative', 120), height=('relative', 120))
+        #oMainCharacteristics = oCharacterDisplayer.build()
 
 
     def openCharacterList(self, oButton):
@@ -145,33 +143,41 @@ class CascadingBoxes(urwid.WidgetPlaceholder):
             bottom=(self.max_box_levels - self.box_level - 1) * 2)
         self.box_level += 1
 
+    def removeLastBox(self):
+        self.original_widget = self.original_widget[0]
+        self.box_level -= 1
+
     def keypress(self, size, key):
-        if key == 'esc' and self.box_level > 1:
-            self.original_widget = self.original_widget[0]
-            self.box_level -= 1
+        if key == 'esc' :
+            self.removeLastBox()
         else:
             return super(CascadingBoxes, self).keypress(size, key)
 
 
 import types
 
-class CharacterStylesheet:
+class CharacterStylesheet(urwid.WidgetPlaceholder):
 
     def __init__(self, oCharacter):
         assert isinstance(oCharacter, CharacterEntity)
         self.oCharacter = oCharacter
+        self.oSecondaryCaracteristics = None
+        self.build()
+        super(CharacterStylesheet, self).__init__(self.original_widget)
 
     def build(self):
         oMainInfos = self.buildMainInfos()
+
         oMainCharacteristics = self.buildMainCharacteristics()
         oTraits = self.buildTraits()
         oSecondaryCaracteristics = self.buildSecondaryCharacteristics()
         oCounters = self.buildCounter()
+        self.oSecondaryCaracteristics = oSecondaryCaracteristics
         oMainPile = urwid.Pile(
             [('fixed', 3, oMainInfos), ('fixed', 12, oMainCharacteristics), ('fixed', 13, oSecondaryCaracteristics), ('fixed', 10, oTraits),
              ('weight', 7, oCounters)]
         )
-        return oMainPile
+        self.original_widget = oMainPile
 
 
     def buildMainInfos(self):
@@ -185,7 +191,11 @@ class CharacterStylesheet:
 
         oCharacter = self.oCharacter
         aListToShow = [
-            ['Force', oCharacter.getStrength()],
+            ['Force', {
+                'value': oCharacter.getStrength(),
+                'callback': 'setStrength',
+                'character':  oCharacter
+            }],
             ['Agilité', oCharacter.getAgility()],
             ['Mental', oCharacter.getMental()],
             ['Charisme', oCharacter.getCharism()],
@@ -226,29 +236,26 @@ class CharacterStylesheet:
     def buildCounter(self):
         oCharacter = self.oCharacter
         aCounters = [
-            ['Argent', oCharacter.getMoney(), self.modifyCharacter],
+            ['Argent', {
+                'value': oCharacter.getMoney(),
+                'callback': 'setMoney',
+                'character': oCharacter
+            }],
             ['Vie', {
                 'value': oCharacter.getLife(),
                 'max': oCharacter.getLifeMax(),
-                'callback' : self.modifyCharacter
+                'callback' : 'setLife',
+                'character' : oCharacter
             }],
             ['Naergie', {
                 'value' : oCharacter.getNaergy(),
                 'max': oCharacter.getNaergyMax(),
-                'callback': self.modifyCharacter
+                'callback': 'setNaergy',
+                'character': oCharacter
             } ]
-        ]
-        aCounters = [
-            ['Argent', oCharacter.getMoney(), self.modifyCharacter],
-            ['Vie', (oCharacter.getLife(),oCharacter.getLifeMax()), self.modifyCharacter],
-            ['Naergie', (oCharacter.getNaergy(), oCharacter.getNaergyMax()), self.modifyCharacter]
         ]
 
         return self.__buildCaracteristics('Compteurs', aCounters)
-
-    def modifyCharacter(self, eEvent):
-        print eEvent
-
 
     # Build a section of caracteristics
     def __buildCaracteristics(self, sCaption, aListOfNameAndValues):
@@ -257,10 +264,7 @@ class CharacterStylesheet:
         aValues = []
         for lTuples in aListOfNameAndValues:
             aNames.append(lTuples[0])
-            if len(lTuples) == 3:
-                aValues.append((lTuples[1], lTuples[2]))
-            else:
-                aValues.append(lTuples[1])
+            aValues.append(lTuples[1])
 
         oCaption = urwid.Text(('sectionName', sCaption))
 
@@ -272,29 +276,22 @@ class CharacterStylesheet:
 
         aUrwidValues = [urwid.Text(''), urwid.Divider('-')]
 
-
         for iValues in aValues:
 
-            if isinstance(iValues, types.TupleType):
-                iFinalValue, fCallback = iValues
+            if not isinstance(iValues, types.DictionaryType):
+                dFinalValue = {'value':iValues}
             else:
-                iFinalValue = iValues
+                dFinalValue = iValues
 
-            if isinstance(iFinalValue, types.TupleType) and len(iFinalValue) == 2:
-                iFinalValue, iMax = iFinalValue
-
-            if not isinstance(iFinalValue, str):
-                floatPart = iFinalValue-int(iFinalValue)
-                if floatPart == 0:
-                    iFinalValue = int(iFinalValue)
-
-            if 'fCallback' in locals():
-                if 'iMax' in locals():
-                    oTextWidget = CharacterGauge(iFinalValue, iMax)
+            # Callback is in
+            if 'callback' in dFinalValue.keys():
+                if 'max' in dFinalValue.keys():
+                    oTextWidget = CharacterGauge(self, dFinalValue['value'], dFinalValue['callback'], dFinalValue['character'], dFinalValue['max'])
+                    oTextWidget.setToto(self.oSecondaryCaracteristics)
                 else:
-                    oTextWidget = urwid.Button(str(iFinalValue))
+                    oTextWidget = CharacterGauge(self, dFinalValue['value'], dFinalValue['callback'], dFinalValue['character'])
             else:
-                oTextWidget = urwid.Text(str(iFinalValue))
+                oTextWidget = urwid.Text(str(dFinalValue['value']))
 
             aUrwidValues.append(oTextWidget)
 
@@ -307,11 +304,17 @@ class CharacterStylesheet:
 class CharacterGauge(urwid.Button):
 
     def __computeGauge(self):
-        return str(self.iCounter) + '/' + str(self.iMax)
+        if None == self.iMax:
+            return str(self.iCounter)
+        else:
+            return str(self.iCounter) + '/' + str(self.iMax)
 
-    def __init__(self, iCounter, iMax):
+    def __init__(self, oCharacterStylesheet, iCounter, fCallback = None, oCharacter = None, iMax = None):
+        self.oCharacterStylesheet = oCharacterStylesheet
         self.iCounter = iCounter
         self.iMax = iMax
+        self.fCallback = fCallback
+        self.oCharacter = oCharacter
         super(CharacterGauge, self).__init__(self.__computeGauge())
 
 
@@ -322,5 +325,22 @@ class CharacterGauge(urwid.Button):
         elif key == 'right':
             self.iCounter+=1
             self.set_label(self.__computeGauge())
+        elif key == 'enter':
+            self.applyNewValue(self.iCounter)
+            self.oCharacter.compute()
+            self.oCharacterStylesheet.build()
 
+    def applyNewValue(self, iNewValue):
+        if None != self.oCharacter and None != self.fCallback:
+            getattr(self.oCharacter, self.fCallback)(iNewValue)
+            self.__getDb().save(self.oCharacter)
+        #exit('non')
+
+    def __getDb(self):
+        oDb = CharacterDatabase()
+        return oDb
+
+    def setToto(self, oToto):
+
+        self.oToto = oToto
 

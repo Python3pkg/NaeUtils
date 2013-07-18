@@ -47,10 +47,11 @@ class CharacterDatabase:
 
         oCharacterModel = self.__transformEntityIntoModel(oCharacter)
 
-        oResult = oCharacterModel.select().where(Character.name == oCharacter.getName())
+        if None == oCharacter.getId():
+            oResult = oCharacterModel.select().where(Character.name == oCharacter.getName())
 
-        if 0 < oResult.count():
-            raise Exception('You cant save character that already exists')
+            if 0 < oResult.count():
+                raise Exception('You cant save character that already exists')
 
         # creating table
         self.__checkIfBaseExistsAndCreateItIfNot()
