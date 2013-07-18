@@ -227,9 +227,23 @@ class CharacterStylesheet:
         oCharacter = self.oCharacter
         aCounters = [
             ['Argent', oCharacter.getMoney(), self.modifyCharacter],
+            ['Vie', {
+                'value': oCharacter.getLife(),
+                'max': oCharacter.getLifeMax(),
+                'callback' : self.modifyCharacter
+            }],
+            ['Naergie', {
+                'value' : oCharacter.getNaergy(),
+                'max': oCharacter.getNaergyMax(),
+                'callback': self.modifyCharacter
+            } ]
+        ]
+        aCounters = [
+            ['Argent', oCharacter.getMoney(), self.modifyCharacter],
             ['Vie', (oCharacter.getLife(),oCharacter.getLifeMax()), self.modifyCharacter],
             ['Naergie', (oCharacter.getNaergy(), oCharacter.getNaergyMax()), self.modifyCharacter]
         ]
+
         return self.__buildCaracteristics('Compteurs', aCounters)
 
     def modifyCharacter(self, eEvent):
