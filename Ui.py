@@ -13,19 +13,40 @@ class Menu:
         self.oMainMenu = None
         self.oCharacterDb = None
 
+    def setCharacterInCombat(self, oCheckbox, bState, iUserId):
+        pass
+        #raise urwid.ExitMainLoop('eeee')
+
+    def openInCombatMenu(self, oButton):
+        self.openCharacterList(oButton, self.setCharacterInCombat)
+
+    def openCharacterList(self, oButton, fCallback=None):
+        oDb = self.__getCharacterDb()
+        oListOfCharacter = oDb.load()
+        if None == fCallback:
+            self.drawCharacterListMenu(oListOfCharacter)
+        else:
+            self.drawCharacterListMenu(oListOfCharacter, checkbox=True, callback=fCallback)
+
     # Draw a list of each character
-    def drawCharacterListMenu(self, oCharacterList):
+    def drawCharacterListMenu(self, oCharacterList, **kwargs):
         assert isinstance(oCharacterList, list)
         aList = []
         for oEachCharacter in oCharacterList:
             assert isinstance(oEachCharacter, CharacterEntity)
             sLabelForCharacterListChoice = str(oEachCharacter.getId()) + '. ' + oEachCharacter.getName()
-            oButton = self.drawEachButton(sLabelForCharacterListChoice, self.openCharacterStyleSheet, oEachCharacter.getId())
+            if 'checkbox' in kwargs.keys() and 'callback' in kwargs.keys() and kwargs['checkbox'] == True:
+                bState = True if oEachCharacter.getInCombat() == True else False
+                oButton = urwid.CheckBox(sLabelForCharacterListChoice, state=bState, on_state_change=kwargs['callback'], user_data=oEachCharacter.getId())
+            else:
+                oButton = self.drawEachButton(sLabelForCharacterListChoice, self.openCharacterStyleSheet, oEachCharacter.getId())
             oButton.characterId = oEachCharacter.getId()
             aList.append(oButton)
         oMenu = self.drawEachMenu('Liste des personnages', aList)
 
         self.oMainMenu.open_box(oMenu)
+
+
 
     # Open a character stylesheet
     def openCharacterStyleSheet(self, oButton):
@@ -55,11 +76,6 @@ class Menu:
         #oMainCharacteristics = oCharacterDisplayer.build()
 
 
-    def openCharacterList(self, oButton):
-        oDb = self.__getCharacterDb()
-        oListOfCharacter = oDb.load()
-        self.drawCharacterListMenu(oListOfCharacter)
-
 
     def returnMenuConfiguration(self):
         return self.drawEachMenu(u'Nae', [
@@ -72,9 +88,12 @@ class Menu:
                 ]),
             self.drawEachSubMenu(u'Combat', [
                 self.drawEachButton(u'Tirer initiative', self.item_chosen),
-                self.drawEachButton(u'Sélectionner personnages pour le combat', self.item_chosen),
+                self.drawEachButton(u'Sélectionner personnages pour le combat', self.openInCombatMenu),
                 ]),
-            ])
+
+            self.drawEachButton(u'Quitter', self.exit_program)
+        ])
+
 
     def drawMainMenu(self, sTitle, FirstChoice):
         oMainBody = [urwid.Text(sTitle), urwid.Divider()]

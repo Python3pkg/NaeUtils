@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import math
+import math, random
 
 # A character in the Nae world
 class Character:
@@ -50,6 +50,9 @@ class Character:
         # Modificator
         self.iTalentPointUsed = 0
         self.iSpiritPointUsed = 0
+
+        # Status
+        self.bInCombat = None
 
     def getId(self):
         return self.iId
@@ -287,6 +290,22 @@ class Character:
         if iValue < -3 or iValue > 0:
             raise ArithmeticError('star '+sCarac+' modificator value must be between -3 and 0')
         self.dStarModificator[sCarac] = iValue
+
+    ########### Variable values ##############
+
+    def getInitiative(self, iDiceScore = None):
+        if None == iDiceScore:
+            iDiceScore = random.randint(1, 10)
+        return self.getReflex() + iDiceScore
+
+    ########### Status #################
+
+    def getInCombat(self):
+        return self.bInCombat
+
+    def setInCombat(self, bInCombat):
+        assert isinstance(bInCombat, bool)
+        self.bInCombat = bInCombat
 
     ############ Compute #############
     def __computeArdor(self):

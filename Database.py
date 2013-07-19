@@ -6,8 +6,6 @@ from Character import Character as CharacterEntity
 class CharacterDatabase:
 
     ###### Save the character in base ######
-
-
     def load(self, iIdOfCharacterToLoad=None):
 	self.__checkIfBaseExistsAndCreateItIfNot()
         oCharacterModel = self.__getCharacterModel()
@@ -59,6 +57,13 @@ class CharacterDatabase:
         # saving
         oCharacterModel.save()
 
+    def setCharacterInCombat(self, oCharacter):
+        """
+        Define in base that character is a part of the combat
+        @param oCharacter:
+        @return:
+        """
+
     def __transformModelIntoEntity(self, oCharacterModel):
         assert isinstance(oCharacterModel, Character)
         oCharacterEntity = CharacterEntity()
@@ -79,6 +84,9 @@ class CharacterDatabase:
         oCharacterEntity.setName(oCharacterModel.name)
         oCharacterEntity.setId(oCharacterModel.id)
         oCharacterEntity.setAge(oCharacterModel.age)
+
+        if oCharacterModel.incombat != None:
+            oCharacterEntity.setInCombat(oCharacterModel.incombat)
 
         oCharacterEntity.compute()
 
@@ -104,6 +112,10 @@ class CharacterDatabase:
         oCharacterModel.instinct = oCharacter.getInstinct()
         oCharacterModel.talentpointused = oCharacter.getTalentPoint()
         oCharacterModel.spiritpointused = oCharacter.getSpiritPoint()
+
+        bInCombat = oCharacter.getInCombat()
+        if None != bInCombat:
+            oCharacterModel.incombat = bInCombat
         return oCharacterModel
 
     def __checkIfBaseExistsAndCreateItIfNot(self):
@@ -143,10 +155,10 @@ class Character(BaseModel):
 
     money = IntegerField()
     life = IntegerField()
+    incombat = BooleanField(null=True)
 
     ## modificator
 
     talentpointused = IntegerField()
     spiritpointused = IntegerField()
-
 
