@@ -46,6 +46,8 @@ class Character:
         # Counters
         self.iMoney = 0
         self.iCurrentLife = 0
+        self.iInit = None
+        self.iInitCompute = []
 
         # Modificator
         self.iTalentPointUsed = 0
@@ -294,9 +296,33 @@ class Character:
     ########### Variable values ##############
 
     def getInitiative(self, iDiceScore = None):
-        if None == iDiceScore:
+        if None != self.iInit:
+            return self.iInit
+
+        self.iInitCompute = [self.getReflex()]
+        def launchDice(iBaseValue=0):
+            iScore = iBaseValue
             iDiceScore = random.randint(1, 10)
+            self.iInitCompute.append(iDiceScore)
+            iScore += iDiceScore
+            if 10 == iDiceScore:
+                iScore += launchDice(iScore)
+            return iScore
+
+
+        if None == iDiceScore:
+            iDiceScore = launchDice(0)
         return self.getReflex() + iDiceScore
+
+    def getInitCompute(self):
+        return self.iInitCompute
+
+    def resetInitiative(self):
+        self.iInit = None
+        self.iInitCompute = []
+
+    def setInitiative(self, iInit):
+        self.iInit = iInit
 
     ########### Status #################
 

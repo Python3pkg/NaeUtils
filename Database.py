@@ -6,13 +6,17 @@ from Character import Character as CharacterEntity
 class CharacterDatabase:
 
     ###### Save the character in base ######
-    def load(self, iIdOfCharacterToLoad=None):
-	self.__checkIfBaseExistsAndCreateItIfNot()
+    def load(self, **kwargs):
+
+        self.__checkIfBaseExistsAndCreateItIfNot()
         oCharacterModel = self.__getCharacterModel()
 
         oModel = oCharacterModel.select()
-        if None != iIdOfCharacterToLoad:
-            oResult = oModel.where(Character.id == iIdOfCharacterToLoad)
+        if 'id' in kwargs.keys():
+            where = Character.id == kwargs['id']
+            oResult = oModel.where(where)
+        elif 'incombat' in kwargs.keys() and kwargs['incombat'] == True:
+            oResult = oModel.where(Character.incombat == True)
         else:
             oResult = oModel
 

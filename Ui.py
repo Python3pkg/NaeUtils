@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 __author__ = 'julien'
 
-
 import urwid, pprint
 from Character import Character as CharacterEntity
 from Database import CharacterDatabase
@@ -13,9 +12,10 @@ class Menu:
         self.oMainMenu = None
         self.oCharacterDb = None
 
-    def setCharacterInCombat(self, oCheckbox, bState, iUserId):
-        pass
-        #raise urwid.ExitMainLoop('eeee')
+    def setCharacterInCombat(self, oCheckbox, bState, oCharacter):
+        assert isinstance(oCharacter, CharacterEntity)
+        oCharacter.setInCombat(bState)
+        self.__getCharacterDb().save(oCharacter)
 
     def openInCombatMenu(self, oButton):
         self.openCharacterList(oButton, self.setCharacterInCombat)
@@ -34,26 +34,85 @@ class Menu:
         aList = []
         for oEachCharacter in oCharacterList:
             assert isinstance(oEachCharacter, CharacterEntity)
-            sLabelForCharacterListChoice = str(oEachCharacter.getId()) + '. ' + oEachCharacter.getName()
+            sLabelForCharacterListChoice = oEachCharacter.getName()
             if 'checkbox' in kwargs.keys() and 'callback' in kwargs.keys() and kwargs['checkbox'] == True:
                 bState = True if oEachCharacter.getInCombat() == True else False
-                oButton = urwid.CheckBox(sLabelForCharacterListChoice, state=bState, on_state_change=kwargs['callback'], user_data=oEachCharacter.getId())
+                oButton = urwid.CheckBox(sLabelForCharacterListChoice, state=bState, on_state_change=kwargs['callback'], user_data=oEachCharacter)
             else:
                 oButton = self.drawEachButton(sLabelForCharacterListChoice, self.openCharacterStyleSheet, oEachCharacter.getId())
             oButton.characterId = oEachCharacter.getId()
             aList.append(oButton)
         oMenu = self.drawEachMenu('Liste des personnages', aList)
-
         self.oMainMenu.open_box(oMenu)
 
+    def askForManualInit(self, oButton):
+        # Load only character in combat
+        aCharacterList = self.__getCharacterDb().load(incombat=True)
 
+        aCharacterNames = []
+        aManualValues = []
+        aEditables = []
+        for oEachCharacter in aCharacterList:
+            assert isinstance(oEachCharacter, CharacterEntity)
+            oText = urwid.Text(oEachCharacter.getName())
+            aCharacterNames.append(oText)
+
+            oEditable = urwid.IntEdit("| Valeur manuelle :")
+            oEditable.character = oEachCharacter
+            aEditables.append(oEditable)
+            aManualValues.append(oEditable)
+
+        def validate(oButton, aEditables):
+            aCharacters = []
+            for aEachEditable in aEditables:
+                oCharacter = aEachEditable.character
+                assert isinstance(oCharacter, CharacterEntity)
+                iValue = aEachEditable.value()
+                if 0 != iValue:
+                    oCharacter.setInitiative(iValue)
+                else:
+                    oCharacter.resetInitiative()
+
+                aCharacters.append(oCharacter)
+
+            self.showComputedInit(aCharacters)
+
+        aCharacterNames.extend([urwid.Divider('_'), urwid.Button('Calculer initiative', validate, user_data=aEditables)])
+        aManualValues.append(urwid.Divider('_'))
+        aPileOfNames = urwid.ListBox(aCharacterNames)
+        aPileOfValues = urwid.ListBox(aManualValues)
+        oColumns = urwid.Columns(
+            [
+                aPileOfNames,
+                aPileOfValues
+            ]
+        )
+        self.oMainMenu.open_box(oColumns)
+
+
+    def showComputedInit(self, aCharacterList):
+
+        aListOfBox = []
+        for oEachCharacter in aCharacterList:
+            assert isinstance(oEachCharacter, CharacterEntity)
+            sInitiative = oEachCharacter.getName() + ' : ' + str(int(oEachCharacter.getInitiative()))
+            sInitiative += ' - ('
+            for iIndex, iValue in enumerate(oEachCharacter.getInitCompute()):
+                if 0 == iIndex:
+                    sInitiative += 'Ref.:'
+                sInitiative += ' ' +str(int(iValue))
+            sInitiative += ')'
+            aListOfBox.append(urwid.Text(sInitiative))
+
+        aListOfCharacter = urwid.ListBox(aListOfBox)
+        self.oMainMenu.open_box(aListOfCharacter)
 
     # Open a character stylesheet
     def openCharacterStyleSheet(self, oButton):
         iCharacterId = oButton.user_data
         assert isinstance(iCharacterId, int)
         oDb = self.__getCharacterDb()
-        aListOfCharacter = oDb.load(iCharacterId)
+        aListOfCharacter = oDb.load(id=iCharacterId)
         if 0 == len(aListOfCharacter):
             raise Exception('unable to find character')
 
@@ -87,7 +146,7 @@ class Menu:
                     ]),
                 ]),
             self.drawEachSubMenu(u'Combat', [
-                self.drawEachButton(u'Tirer initiative', self.item_chosen),
+                self.drawEachButton(u'Tirer initiative', self.askForManualInit),
                 self.drawEachButton(u'Sélectionner personnages pour le combat', self.openInCombatMenu),
                 ]),
 
