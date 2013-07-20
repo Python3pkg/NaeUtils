@@ -45,6 +45,8 @@ class Character:
 
         # Counters
         self.iMoney = 0
+        self.iBaseMaxLife = 0
+        self.iBaseMaxNaergy = 0
         self.iCurrentLife = 0
         self.iInit = None
         self.iInitCompute = []
@@ -159,7 +161,6 @@ class Character:
     def setInstinct(self, iInstinct):
         self.iInstinct = iInstinct
 
-
     # secondary
 
     def getArdor(self):
@@ -183,10 +184,10 @@ class Character:
     # traits
 
     def getLifeMax(self):
-        return self.iLifeMax
+        return self.iBaseMaxLife + self.iLifeMax
 
     def getNaergyMax(self):
-        return self.iNaergyMax
+        return self.iBaseMaxNaergy + self.iNaergyMax
 
     def getHealing(self):
         return self.iHealing
@@ -237,9 +238,15 @@ class Character:
     def subLife(self, iLifeToSub):
         self.iCurrentLife -= iLifeToSub
 
+    def getBaseLifeMax(self):
+        return self.iBaseMaxLife
+
+    def setBaseLifeMax(self, iLifeBase):
+        self.iBaseMaxLife = iLifeBase
+
     ## Naergy, what, power!
     def getNaergy(self):
-        return self.iCurrentNaergy
+        return self.iBaseMaxNaergy + self.iCurrentNaergy
 
     def setNaergy(self, iCurrentNaergy):
         self.iCurrentNaergy = iCurrentNaergy
@@ -247,7 +254,14 @@ class Character:
     def addNaergy(self, iNaergyToAdd):
         self.iCurrentNaergy += iNaergyToAdd
 
-    def subLife(self, iNaergyToSub):
+    def getBaseNaergyMax(self):
+        return self.iBaseMaxNaergy
+
+    ## set base Naergy
+    def setBaseNaergyMax(self, iBaseNaergyMax):
+        self.iBaseMaxNaergy = iBaseNaergyMax
+
+    def subNaergy(self, iNaergyToSub):
         self.iCurrentNaergy -= iNaergyToSub
 
     def setTalentPoint(self, iHowMany):

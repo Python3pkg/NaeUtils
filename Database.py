@@ -89,6 +89,9 @@ class CharacterDatabase:
         oCharacterEntity.setId(oCharacterModel.id)
         oCharacterEntity.setAge(oCharacterModel.age)
 
+        oCharacterEntity.setBaseLifeMax(oCharacterModel.baselifemax)
+        oCharacterEntity.setBaseNaergyMax(oCharacterModel.basenaergymax)
+
         if oCharacterModel.incombat != None:
             oCharacterEntity.setInCombat(oCharacterModel.incombat)
 
@@ -116,6 +119,8 @@ class CharacterDatabase:
         oCharacterModel.instinct = oCharacter.getInstinct()
         oCharacterModel.talentpointused = oCharacter.getTalentPoint()
         oCharacterModel.spiritpointused = oCharacter.getSpiritPoint()
+        oCharacterModel.baselifemax = oCharacter.getBaseLifeMax()
+        oCharacterModel.basenaergymax = oCharacter.getBaseNaergyMax()
 
         bInCombat = oCharacter.getInCombat()
         if None != bInCombat:
@@ -166,3 +171,6 @@ class Character(BaseModel):
     talentpointused = IntegerField()
     spiritpointused = IntegerField()
 
+    # counter
+    baselifemax = IntegerField()
+    basenaergymax = IntegerField()

@@ -314,6 +314,16 @@ class CharacterStylesheet(urwid.WidgetPlaceholder):
     def buildCounter(self):
         oCharacter = self.oCharacter
         aCounters = [
+            ['Bonus sur max de vie', {
+                'value': oCharacter.getBaseLifeMax(),
+                'callback': 'setBaseLifeMax',
+                'character': oCharacter
+            }],
+            ['Bonus sur max de Naergie', {
+                'value': oCharacter.getBaseNaergyMax(),
+                'callback': 'setBaseNaergyMax',
+                'character': oCharacter
+            }],
             ['Argent', {
                 'value': oCharacter.getMoney(),
                 'callback': 'setMoney',
