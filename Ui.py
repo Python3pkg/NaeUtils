@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'julien'
 
-import urwid, pprint
+import urwid, copy
 from Character import Character as CharacterEntity
 from Database import CharacterDatabase
 
@@ -134,17 +134,40 @@ class Menu:
         self.oMainMenu.open_box(oCharacterDisplayer, width=('relative', 120), height=('relative', 120))
         #oMainCharacteristics = oCharacterDisplayer.build()
 
+    def showError(self, oButton, sErrorMessage='Test'):
+        aErrorWindow = [urwid.Text(('errorTitle', 'Erreur')), urwid.Divider('-'), urwid.Text(sErrorMessage, align='center')]
+        aErrorListBox = urwid.ListBox(aErrorWindow)
+        self.oMainMenu.open_box(aErrorListBox, width=('relative', 30), height=('relative', 3))
+
+    def createCharacterWindow(self, oButton):
+        aCreateCharacter = [urwid.Text('Création de personnage'), urwid.Divider('-')]
+        aLeftFormColumn = [urwid.Text('Nom :'), urwid.Text('Age :'), urwid.Divider(), urwid.Text('Type :')]
+        oEditName = urwid.AttrMap(urwid.Edit(u"", u""), 'formField', focus_map='formFieldSelected')
+        oEditAge = urwid.AttrMap(urwid.IntEdit(u"", u""), 'formField', focus_map='formFieldSelected')
+        #oEdit = urwid.Edit(u"", u"")
+        aType = []
+        aRightFormColumn = [oEditName, oEditAge, urwid.Divider(), urwid.RadioButton(aType, 'PJ', state='first True', user_data='pnj'), urwid.RadioButton(aType, 'PNJ', state='first True', user_data='pnj')]
+        aLeftBox = urwid.ListBox(aLeftFormColumn)
+        aRightBox = urwid.ListBox(aRightFormColumn)
+        oColumns = urwid.Columns([('fixed', 7, aLeftBox), aRightBox, urwid.ListBox([])])
+        oCreateCharacter = urwid.Pile(
+            [
+                ('fixed', 3, urwid.ListBox(aCreateCharacter)),
+                ('fixed', 6, oColumns),
+                urwid.ListBox([urwid.Divider('-'), urwid.Padding(urwid.Button(('reversed', '   OK   ')), align='center', width=('relative', 18))])
+            ]
+        )
+        self.oMainMenu.open_box(oCreateCharacter, height=('relative', 25), width=('relative', 30))
 
 
     def returnMenuConfiguration(self):
         return self.drawEachMenu(u'Nae', [
             self.drawEachSubMenu(u'Personnages', [
-                self.drawEachSubMenu(u'Gestion', [
-                    self.drawEachButton(u'Liste des personnages', self.openCharacterList),
-                    self.drawEachButton(u'Créer un personnage', self.item_chosen),
-                    self.drawEachButton(u'Générer un personnage', self.item_chosen),
-                    ]),
+                self.drawEachButton(u'Liste des personnages', self.openCharacterList),
+                self.drawEachButton(u'Créer un personnage', self.createCharacterWindow),
+                self.drawEachButton(u'Générer un personnage', self.item_chosen),
                 ]),
+
             self.drawEachSubMenu(u'Combat', [
                 self.drawEachButton(u'Tirer initiative', self.askForManualInit),
                 self.drawEachButton(u'Sélectionner personnages pour le combat', self.openInCombatMenu),
@@ -189,7 +212,10 @@ class Menu:
         aPalette = [
             ('reversed', 'standout', ''),
             ('characterName', 'white,bold', 'dark blue'),
-            ('sectionName', 'black, bold', 'white')
+            ('sectionName', 'black, bold', 'white'),
+            ('errorTitle', 'dark red, bold', 'white'),
+            ('formField', 'white', 'light blue'),
+            ('formFieldSelected', 'black', 'white')
         ]
         urwid.MainLoop(self.oMainMenu, palette=aPalette).run()
 
@@ -228,6 +254,8 @@ class CascadingBoxes(urwid.WidgetPlaceholder):
     def keypress(self, size, key):
         if key == 'esc' :
             self.removeLastBox()
+            if self.box_level == 0:
+                raise urwid.ExitMainLoop()
         else:
             return super(CascadingBoxes, self).keypress(size, key)
 
