@@ -64,17 +64,12 @@ class Character:
     def setId(self, iId):
         self.iId = iId
 
-    def setType(self, sType):
-        if 'pnj' != sType and 'pj' != 'pj':
-            raise Exception('type must be pj or pnj')
-        self.sType = sType
-
     def getType(self):
         return self.sType
 
     def setType(self, sType):
         if sType not in ['pj', 'pnj']:
-            raise Exception('Type is not autorized')
+            raise Exception('Type is not autorized : ' + sType)
         self.sType = sType
 
     def getName(self):

@@ -134,7 +134,7 @@ class Menu:
         self.oMainMenu.open_box(oCharacterDisplayer, width=('relative', 120), height=('relative', 120))
         #oMainCharacteristics = oCharacterDisplayer.build()
 
-    def showError(self, oButton, sErrorMessage='Test'):
+    def showError(self, sErrorMessage='Test'):
         aErrorWindow = [urwid.Text(('errorTitle', 'Erreur')), urwid.Divider('-'), urwid.Text(sErrorMessage, align='center')]
         aErrorListBox = urwid.ListBox(aErrorWindow)
         self.oMainMenu.open_box(aErrorListBox, width=('relative', 30), height=('relative', 3))
@@ -142,11 +142,26 @@ class Menu:
     def createCharacterWindow(self, oButton):
         aCreateCharacter = [urwid.Text('Création de personnage'), urwid.Divider('-')]
         aLeftFormColumn = [urwid.Text('Nom :'), urwid.Text('Age :'), urwid.Divider(), urwid.Text('Type :')]
-        oEditName = urwid.AttrMap(urwid.Edit(u"", u""), 'formField', focus_map='formFieldSelected')
-        oEditAge = urwid.AttrMap(urwid.IntEdit(u"", u""), 'formField', focus_map='formFieldSelected')
+        oEditNameForm = urwid.Edit(u"", u"")
+        oEditName = urwid.AttrMap(oEditNameForm, 'formField', focus_map='formFieldSelected')
+        oEditAgeForm = urwid.IntEdit(u"", u"")
+        oEditAge = urwid.AttrMap(oEditAgeForm, 'formField', focus_map='formFieldSelected')
         #oEdit = urwid.Edit(u"", u"")
         aType = []
-        aRightFormColumn = [oEditName, oEditAge, urwid.Divider(), urwid.RadioButton(aType, 'PJ', state='first True', user_data='pnj'), urwid.RadioButton(aType, 'PNJ', state='first True', user_data='pnj')]
+        oTypeValue = {'value': 'pj'}
+        def __onTypeChange(oButton, bState, oUserData):
+            sType = oUserData['type']
+            oRetriever = oUserData['retriever']
+            oRetriever['value'] = sType
+
+        aRightFormColumn = [
+            oEditName,
+            oEditAge,
+            urwid.Divider(),
+            urwid.RadioButton(aType, 'PJ', state='first True', on_state_change=__onTypeChange, user_data={'type':'pnj', 'retriever':oTypeValue}),
+            urwid.RadioButton(aType, 'PNJ', state='first True', on_state_change=__onTypeChange, user_data={'type':'pnj', 'retriever':oTypeValue})
+        ]
+        aForm = [oEditNameForm, oEditAgeForm, oTypeValue]
         aLeftBox = urwid.ListBox(aLeftFormColumn)
         aRightBox = urwid.ListBox(aRightFormColumn)
         oColumns = urwid.Columns([('fixed', 7, aLeftBox), aRightBox, urwid.ListBox([])])
@@ -154,10 +169,43 @@ class Menu:
             [
                 ('fixed', 3, urwid.ListBox(aCreateCharacter)),
                 ('fixed', 6, oColumns),
-                urwid.ListBox([urwid.Divider('-'), urwid.Padding(urwid.Button(('reversed', '   OK   ')), align='center', width=('relative', 18))])
+                urwid.ListBox([urwid.Divider('-'), urwid.Padding(urwid.Button(('reversed', '   OK   '), on_press=self.createCharacter, user_data=aForm), align='center', width=('relative', 18))])
             ]
         )
         self.oMainMenu.open_box(oCreateCharacter, height=('relative', 25), width=('relative', 30))
+
+    def createCharacter(self, oButton, oUserData):
+        aForm = oUserData
+        oEditName, oEditAge, oTypeValue = aForm
+        sType = oTypeValue['value']
+        sName = oEditName.get_edit_text()
+        sAge = oEditAge.get_edit_text()
+
+        if sName.strip() == '':
+            self.showError('Veuillez saisir un nom pour créer le personnage')
+        elif str(sAge).strip() == '':
+            self.showError('Veuillez saisir un age pour créer le personnage')
+        else:
+            oCharacter = CharacterEntity()
+            oCharacter.setName(sName)
+            oCharacter.setAge(sAge)
+            oCharacter.setType(sType)
+            oCharacter.setStrength(10)
+            oCharacter.setAgility(10)
+            oCharacter.setMental(10)
+            oCharacter.setCharism(10)
+            oCharacter.setDiscernment(10)
+            oCharacter.setStamina(10)
+            oCharacter.setWill(10)
+            oCharacter.setInstinct(10)
+            oCharacter.compute()
+            oDb = self.__getCharacterDb()
+            oDb.save(oCharacter)
+            self.oMainMenu.removeLastBox()
+            self.openCharacterList({})
+
+
+
 
 
     def returnMenuConfiguration(self):

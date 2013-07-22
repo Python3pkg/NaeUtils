@@ -41,7 +41,7 @@ class CharacterDatabase:
 
         for sCharac in aMainCaracteristic:
             fMethod = getattr(oCharacter, 'get'+sCharac)
-            if 0 == fMethod():
+            if None == fMethod():
                 raise Exception('Unable to save a character without '+sCharac)
 
         if None == oCharacter.getType():
