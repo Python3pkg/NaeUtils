@@ -12,6 +12,12 @@ class Menu:
         self.oMainMenu = None
         self.oCharacterDb = None
 
+    def showError(self, sErrorMessage='Test'):
+        aErrorWindow = [urwid.Text(('errorTitle', 'Erreur')), urwid.Divider('-'), urwid.Text(sErrorMessage, align='center')]
+        aErrorListBox = urwid.ListBox(aErrorWindow)
+        self.oMainMenu.open_box(aErrorListBox, width=('relative', 30), height=('relative', 3))
+
+
     def setCharacterInCombat(self, oCheckbox, bState, oCharacter):
         assert isinstance(oCharacter, CharacterEntity)
         oCharacter.setInCombat(bState)
@@ -44,6 +50,9 @@ class Menu:
             aList.append(oButton)
         oMenu = self.drawEachMenu('Liste des personnages', aList)
         self.oMainMenu.open_box(oMenu)
+
+
+    ##### Init management
 
     def askForManualInit(self, oButton):
         # Load only character in combat
@@ -107,6 +116,8 @@ class Menu:
         aListOfCharacter = urwid.ListBox(aListOfBox)
         self.oMainMenu.open_box(aListOfCharacter)
 
+    #### Character stylesheet
+
     # Open a character stylesheet
     def openCharacterStyleSheet(self, oButton):
         iCharacterId = oButton.user_data
@@ -119,25 +130,9 @@ class Menu:
         assert isinstance(aListOfCharacter[0], CharacterEntity)
         oCurrentCharacter = aListOfCharacter[0]
 
-        # New overlay
-#        oCharacterSheet = urwid.Overlay(
-#            urwid.Text(oCurrentCharacter.getName()),
-#            urwid.Text(str(oCurrentCharacter.getId())),
-#            width=('relative', 100),
-#            height=('relative', 100),
-#            valign='top',
-#            align='left',
-#
-#        )
-
         oCharacterDisplayer = CharacterStylesheet(oCurrentCharacter)
         self.oMainMenu.open_box(oCharacterDisplayer, width=('relative', 120), height=('relative', 120))
-        #oMainCharacteristics = oCharacterDisplayer.build()
 
-    def showError(self, sErrorMessage='Test'):
-        aErrorWindow = [urwid.Text(('errorTitle', 'Erreur')), urwid.Divider('-'), urwid.Text(sErrorMessage, align='center')]
-        aErrorListBox = urwid.ListBox(aErrorWindow)
-        self.oMainMenu.open_box(aErrorListBox, width=('relative', 30), height=('relative', 3))
 
     def createCharacterWindow(self, oButton):
         aCreateCharacter = [urwid.Text('Création de personnage'), urwid.Divider('-')]
@@ -203,9 +198,6 @@ class Menu:
             oDb.save(oCharacter)
             self.oMainMenu.removeLastBox()
             self.openCharacterList({})
-
-
-
 
 
     def returnMenuConfiguration(self):

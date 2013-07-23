@@ -315,7 +315,7 @@ class Character:
             self.iInitCompute.append(iDiceScore)
             iScore += iDiceScore
             if 10 == iDiceScore:
-                iScore += launchDice(iScore)
+                iScore = launchDice(iScore)
             return iScore
 
 
