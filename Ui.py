@@ -26,11 +26,13 @@ class Menu:
     def openInCombatMenu(self, oButton):
         self.openCharacterList(oButton, self.setCharacterInCombat)
 
-    def openCharacterList(self, oButton, fCallback=None):
+    def openCharacterList(self, oButton=None, fCallback=None, sType="checkbox"):
         oDb = self.__getCharacterDb()
         oListOfCharacter = oDb.load()
         if None == fCallback:
             self.drawCharacterListMenu(oListOfCharacter)
+        elif sType == "button":
+            self.drawCharacterListMenu(oListOfCharacter, callback=fCallback)
         else:
             self.drawCharacterListMenu(oListOfCharacter, checkbox=True, callback=fCallback)
 
@@ -45,7 +47,11 @@ class Menu:
                 bState = True if oEachCharacter.getInCombat() == True else False
                 oButton = urwid.CheckBox(sLabelForCharacterListChoice, state=bState, on_state_change=kwargs['callback'], user_data=oEachCharacter)
             else:
-                oButton = self.drawEachButton(sLabelForCharacterListChoice, self.openCharacterStyleSheet, oEachCharacter.getId())
+                if 'callback' in kwargs.keys():
+                    fCallback = kwargs['callback']
+                else:
+                    fCallback = self.openCharacterStyleSheet
+                oButton = self.drawEachButton(sLabelForCharacterListChoice, fCallback, oEachCharacter.getId())
             oButton.characterId = oEachCharacter.getId()
             aList.append(oButton)
         oMenu = self.drawEachMenu('Liste des personnages', aList)
@@ -205,6 +211,7 @@ class Menu:
             self.drawEachSubMenu(u'Personnages', [
                 self.drawEachButton(u'Liste des personnages', self.openCharacterList),
                 self.drawEachButton(u'Créer un personnage', self.createCharacterWindow),
+                self.drawEachButton(u'Supprimer un personnage', self.deleteCharacterWindow),
                 self.drawEachButton(u'Générer un personnage', self.item_chosen),
                 ]),
 
@@ -215,6 +222,42 @@ class Menu:
 
             self.drawEachButton(u'Quitter', self.exit_program)
         ])
+
+    def deleteCharacterWindow(self, oButton=None):
+        self.openCharacterList(oButton, fCallback=self.deleteCharacter, sType="button")
+
+    def deleteCharacter(self, oButton):
+        iCharacterId = oButton.user_data
+        oDbAdapter = self.__getCharacterDb()
+        aListOfCharacter = oDbAdapter.load(id=iCharacterId)
+        if 0 == len(aListOfCharacter):
+            raise Exception('unable to find character')
+        oCharacter = aListOfCharacter[0]
+        assert isinstance(oCharacter, CharacterEntity)
+
+        def deleteCharacterInDb(oButton):
+            iId = oCharacter.getId()
+            oDbAdapter.delete(oCharacter)
+            self.oMainMenu.removeLastBox()
+            self.oMainMenu.removeLastBox()
+            self.deleteCharacterWindow()
+
+        self.drawModalWarning('Supprimer le personnage '+oCharacter.getName(), 'OUI', 'NON', deleteCharacterInDb , self.oMainMenu.removeLastBox)
+
+    def drawModalWarning(self, sWarning, sChoiceOne, sChoiceTwo, fCallbackOne, fCallbackTwo):
+        aTotalWindow = []
+        oHeader = urwid.ListBox([urwid.Text(('errorTitle', sWarning), align='center'), urwid.Divider('-')])
+        def createButton(sText, fCallback):
+            oButton = urwid.Button(sText, fCallback)
+            oButton = urwid.Padding(oButton, align='center', width=('relative', 20))
+            return oButton
+        aChoiceOne = urwid.ListBox([createButton(sChoiceOne, fCallbackOne)])
+        aChoiceTwo = urwid.ListBox([createButton(sChoiceTwo, fCallbackTwo)])
+        oChoices = urwid.Columns([aChoiceOne, aChoiceTwo])
+
+        oTotalList = urwid.Pile([oHeader, oChoices])
+        self.oMainMenu.open_box(oTotalList, width=('relative', 30), height=('relative', 20))
+
 
 
     def drawMainMenu(self, sTitle, FirstChoice):
@@ -287,7 +330,7 @@ class CascadingBoxes(urwid.WidgetPlaceholder):
             bottom=(self.max_box_levels - self.box_level - 1) * 2)
         self.box_level += 1
 
-    def removeLastBox(self):
+    def removeLastBox(self, oButton=None):
         self.original_widget = self.original_widget[0]
         self.box_level -= 1
 

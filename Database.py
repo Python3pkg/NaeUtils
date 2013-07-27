@@ -61,12 +61,12 @@ class CharacterDatabase:
         # saving
         oCharacterModel.save()
 
-    def setCharacterInCombat(self, oCharacter):
-        """
-        Define in base that character is a part of the combat
-        @param oCharacter:
-        @return:
-        """
+    # Delete a character in base
+    def delete(self, oCharacter):
+        assert isinstance(oCharacter, CharacterEntity)
+        self.__checkIfBaseExistsAndCreateItIfNot()
+        oModel = self.__transformEntityIntoModel(oCharacter)
+        oModel.delete_instance()
 
     def __transformModelIntoEntity(self, oCharacterModel):
         assert isinstance(oCharacterModel, Character)
