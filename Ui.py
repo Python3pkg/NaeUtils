@@ -147,7 +147,6 @@ class Menu:
         oEditName = urwid.AttrMap(oEditNameForm, 'formField', focus_map='formFieldSelected')
         oEditAgeForm = urwid.IntEdit(u"", u"")
         oEditAge = urwid.AttrMap(oEditAgeForm, 'formField', focus_map='formFieldSelected')
-        #oEdit = urwid.Edit(u"", u"")
         aType = []
         oTypeValue = {'value': 'pj'}
         def __onTypeChange(oButton, bState, oUserData):
@@ -211,8 +210,7 @@ class Menu:
             self.drawEachSubMenu(u'Personnages', [
                 self.drawEachButton(u'Liste des personnages', self.openCharacterList),
                 self.drawEachButton(u'Créer un personnage', self.createCharacterWindow),
-                self.drawEachButton(u'Supprimer un personnage', self.deleteCharacterWindow),
-                self.drawEachButton(u'Générer un personnage', self.item_chosen),
+                self.drawEachButton(u'Supprimer un personnage', self.deleteCharacterWindow)
                 ]),
 
             self.drawEachSubMenu(u'Combat', [
@@ -540,7 +538,6 @@ class CharacterGauge(urwid.Button):
         if None != self.oCharacter and None != self.fCallback:
             getattr(self.oCharacter, self.fCallback)(iNewValue)
             self.__getDb().save(self.oCharacter)
-        #exit('non')
 
     def __getDb(self):
         oDb = CharacterDatabase()
