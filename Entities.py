@@ -156,6 +156,22 @@ class Character:
     def setInstinct(self, iInstinct):
         self.iInstinct = iInstinct
 
+    def getValueByMainCaracString(self, sCaracteristicName):
+        if sCaracteristicName == 'charism':
+            iBaseCounter = self.getCharism()
+        elif sCaracteristicName == 'strength':
+            iBaseCounter = self.getStrength()
+        elif sCaracteristicName == 'agility:':
+            iBaseCounter = self.getAgility()
+        elif sCaracteristicName == 'mental':
+            iBaseCounter = self.getMental()
+        elif sCaracteristicName == 'discernment':
+            iBaseCounter = self.getDiscernment()
+        elif sCaracteristicName == 'will':
+            iBaseCounter = self.getWill()
+        elif sCaracteristicName == 'instinct':
+            iBaseCounter = self.getInstinct()
+
     # secondary
 
     def getArdor(self):
@@ -406,6 +422,27 @@ class Character:
     def __initNaergy(self):
         self.iCurrentNaergy = self.iNaergyMax
         assert isinstance(self.iCurrentNaergy, int) and self.iCurrentLife > 0
+
+
+########################
+##### COMPETENCES ######
+########################
+
+class Skill:
+
+    def __init__(self):
+        self.iId = None
+        self.sName = None
+        self.sBaseCaracteristic = None
+        self.sFormula = None
+        self.iPoints = 0
+        self.sDescription = None
+
+
+    def compute(self, oCharacter):
+        iCounter = oCharacter.getValueByMainCaracString(self.sBaseCaracteristic)
+
+
 
 
 ###############################

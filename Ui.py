@@ -3,7 +3,7 @@
 __author__ = 'julien'
 
 import urwid, copy
-from Character import Character as CharacterEntity
+from Entities import Character as CharacterEntity
 from Database import CharacterDatabase
 
 class Menu:
@@ -533,6 +533,8 @@ class CharacterGauge(urwid.Button):
             self.applyNewValue(self.iCounter)
             self.oCharacter.compute()
             self.oCharacterStylesheet.build()
+        else:
+            super(CharacterGauge, self).keypress(size, key)
 
     def applyNewValue(self, iNewValue):
         if None != self.oCharacter and None != self.fCallback:
@@ -546,4 +548,30 @@ class CharacterGauge(urwid.Button):
     def setToto(self, oToto):
 
         self.oToto = oToto
-
+#
+#from urwid.widget import Edit, LEFT, SPACE
+#
+#class CharacterEditField(urwid.Edit):
+#
+#    def __init__(self, caption=u"", edit_text=u"", multiline=False, align=LEFT, wrap=SPACE, allow_tab=False,
+#                 edit_pos=None, layout=None, mask=None):
+#        self._mask = mask
+#        self._edit_text = edit_text
+#
+#        urwid.Edit.__init__(self, caption, edit_text, multiline, align, wrap, allow_tab, edit_pos, layout, mask)
+#
+#    def transformTextToFilledText(self, sText):
+#        (maxcol, maxrow) = self.pack()
+#        if len(sText) < maxcol:
+#
+#
+#    def set_edit_text(self, text):
+#        (maxcol, maxrow) = self.pack()
+#        if len(text) < maxcol:
+#            iDiff = maxcol - len(text)
+#            iPost = '.' * iDiff
+#            text += iPost
+#        super(CharacterEditField, self).set_edit_text(text)
+#
+#    def keypress(self, size, key):
+#        if self.valid_char(key):

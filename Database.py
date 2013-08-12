@@ -1,7 +1,7 @@
 __author__ = 'julien'
 
 from peewee import *
-from Character import Character as CharacterEntity
+from Entities import Character as CharacterEntity
 
 class CharacterDatabase:
 
@@ -174,3 +174,16 @@ class Character(BaseModel):
     # counter
     baselifemax = IntegerField()
     basenaergymax = IntegerField()
+
+
+databaseCompetences = SqliteDatabase('database/competences.sql')
+
+##### Competences  ########
+class Skill(Model):
+    class Meta:
+        database = databaseCompetences
+
+    name = CharField(max_length=80)
+    base_caracteristic = CharField(max_length=30)
+    base_formula = CharField(max_length=30)
+    points = IntegerField()

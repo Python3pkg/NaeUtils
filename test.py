@@ -1,6 +1,6 @@
 __author__ = 'julien'
 
-from Character import Character, CharacterDisplayer
+from Entities import Character, CharacterDisplayer
 from Database import CharacterDatabase
 
 oCharacter = Character()
