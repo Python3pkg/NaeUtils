@@ -438,11 +438,45 @@ class Skill:
         self.iPoints = 0
         self.sDescription = None
 
-
     def compute(self, oCharacter):
         iCounter = oCharacter.getValueByMainCaracString(self.sBaseCaracteristic)
 
+    def getId(self):
+        return self.iId
 
+    def setId(self, iId):
+        iId = iId
+
+    def getName(self):
+        return self.sName
+
+    def setName(self, sName):
+        self.sName = sName
+
+    def getBaseCaracteristic(self):
+        return self.sBaseCaracteristic
+
+    def setBaseCaracteristic(self, sBaseCaracteristic):
+        self.sBaseCaracteristic = sBaseCaracteristic
+
+    def getFormula(self):
+        return self.sFormula
+
+    def setFormula(self, sFormula):
+        self.sFormula = sFormula
+
+    def getPoints(self):
+        return self.iPoints
+
+    def setPoints(self, iPoints):
+        assert isinstance(iPoints, int)
+        self.iPoints = iPoints
+
+    def getDescription(self):
+        return self.sDescription
+
+    def setDescription(self, sDescription):
+        self.sDescription = sDescription
 
 
 ###############################
