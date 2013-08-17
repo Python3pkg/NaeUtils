@@ -58,6 +58,9 @@ class Character:
         # Status
         self.bInCombat = None
 
+        # Skills
+        self.aSkills = []
+
     def getId(self):
         return self.iId
 
@@ -348,6 +351,17 @@ class Character:
 
     def setInitiative(self, iInit):
         self.iInit = iInit
+
+
+    ########## Skills ##################
+
+    def setSkills(self, aSkills):
+        for oSkill in aSkills:
+            assert isinstance(oSkill, Skill)
+            self.aSkills.append(oSkill)
+
+    def getSkills(self):
+        return self.aSkills
 
     ########### Status #################
 

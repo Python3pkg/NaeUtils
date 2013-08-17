@@ -3,7 +3,33 @@ __author__ = 'julien'
 from peewee import *
 from Entities import Character as CharacterEntity
 
-class CharacterDatabase:
+class MainDatabase:
+
+    def __checkIfBaseExistsAndCreateItIfNot(self):
+        oModel = self.__getCharacterModel()
+        if not oModel.table_exists():
+            oModel.create_table()
+        oSkill = self.__getSkillModel()
+        if not oSkill.table_exists():
+            oSkill.create_table()
+        oSkillCharacter = self.__getSkillCharacterModel()
+        if not oSkillCharacter.table_exists():
+            oSkillCharacter.create_table()
+
+    def __getCharacterModel(self):
+        oCharacterModel = Character()
+        return oCharacterModel
+
+    def __getSkillModel(self):
+        oSkillModel = Skill()
+        return oSkillModel
+
+    def __getSkillCharacterModel(self):
+        oCharacterSkillModel = CharacterSkills()
+        return oCharacterSkillModel
+
+
+class CharacterDatabase(MainDatabase):
 
     ###### Save the character in base ######
     def load(self, **kwargs):
@@ -125,15 +151,9 @@ class CharacterDatabase:
         bInCombat = oCharacter.getInCombat()
         if None != bInCombat:
             oCharacterModel.incombat = bInCombat
-        return oCharacterModel
 
-    def __checkIfBaseExistsAndCreateItIfNot(self):
-        oModel = self.__getCharacterModel()
-        if not oModel.table_exists():
-            oModel.create_table()
 
-    def __getCharacterModel(self):
-        oCharacterModel = Character()
+
         return oCharacterModel
 
 
@@ -176,12 +196,17 @@ class Character(BaseModel):
     basenaergymax = IntegerField()
 
 
-databaseCompetences = SqliteDatabase('database/competences.sql')
+class CharacterSkills(BaseModel):
+    skill = ForeignKeyField(Skill)
+    character = ForeignKeyField(Character)
+    points = IntegerField()
+
+#databaseCompetences = SqliteDatabase('database/competences.sql')
 
 ##### Competences  ########
 class Skill(Model):
     class Meta:
-        database = databaseCompetences
+        database = database
 
     name = CharField(max_length=80)
     base_caracteristic = CharField(max_length=30)
