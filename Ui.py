@@ -107,10 +107,17 @@ class Menu:
 
     def showComputedInit(self, aCharacterList):
 
-        aListOfBox = []
         for oEachCharacter in aCharacterList:
             assert isinstance(oEachCharacter, CharacterEntity)
-            sInitiative = oEachCharacter.getName() + ' : ' + str(int(oEachCharacter.getInitiative()))
+            oEachCharacter.setInitiative(oEachCharacter.getInitiative())
+        aCharacterList = sorted(aCharacterList, key=lambda character: character.getInitiative(), reverse=True)
+
+        aListOfBox = []
+        aListOfBox.extend([urwid.Text('Résultat d\'initiative'), urwid.Divider('-')])
+        iListIndex = 1
+        for oEachCharacter in aCharacterList:
+            assert isinstance(oEachCharacter, CharacterEntity)
+            sInitiative = str(iListIndex) + ' - ' +oEachCharacter.getName() + ' : ' + str(int(oEachCharacter.getInitiative()))
             sInitiative += ' - ('
             for iIndex, iValue in enumerate(oEachCharacter.getInitCompute()):
                 if 0 == iIndex:
@@ -118,6 +125,7 @@ class Menu:
                 sInitiative += ' ' +str(int(iValue))
             sInitiative += ')'
             aListOfBox.append(urwid.Text(sInitiative))
+            iListIndex += 1
 
         aListOfCharacter = urwid.ListBox(aListOfBox)
         self.oMainMenu.open_box(aListOfCharacter)

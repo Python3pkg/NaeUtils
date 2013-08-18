@@ -337,7 +337,6 @@ class Character:
                 iScore = launchDice(iScore)
             return iScore
 
-
         if None == iDiceScore:
             iDiceScore = launchDice(0)
         return self.getReflex() + iDiceScore
