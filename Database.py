@@ -5,26 +5,26 @@ from Entities import Character as CharacterEntity
 
 class MainDatabase:
 
-    def __checkIfBaseExistsAndCreateItIfNot(self):
-        oModel = self.__getCharacterModel()
+    def checkIfBaseExistsAndCreateItIfNot(self):
+        oModel = self.getCharacterModel()
         if not oModel.table_exists():
             oModel.create_table()
-        oSkill = self.__getSkillModel()
+        oSkill = self.getSkillModel()
         if not oSkill.table_exists():
             oSkill.create_table()
-        oSkillCharacter = self.__getSkillCharacterModel()
+        oSkillCharacter = self.getSkillCharacterModel()
         if not oSkillCharacter.table_exists():
             oSkillCharacter.create_table()
 
-    def __getCharacterModel(self):
+    def getCharacterModel(self):
         oCharacterModel = Character()
         return oCharacterModel
 
-    def __getSkillModel(self):
+    def getSkillModel(self):
         oSkillModel = Skill()
         return oSkillModel
 
-    def __getSkillCharacterModel(self):
+    def getSkillCharacterModel(self):
         oCharacterSkillModel = CharacterSkills()
         return oCharacterSkillModel
 
@@ -34,8 +34,8 @@ class CharacterDatabase(MainDatabase):
     ###### Save the character in base ######
     def load(self, **kwargs):
 
-        self.__checkIfBaseExistsAndCreateItIfNot()
-        oCharacterModel = self.__getCharacterModel()
+        self.checkIfBaseExistsAndCreateItIfNot()
+        oCharacterModel = self.getCharacterModel()
 
         oModel = oCharacterModel.select()
         if 'id' in kwargs.keys():
@@ -82,7 +82,7 @@ class CharacterDatabase(MainDatabase):
                 raise Exception('You cant save character that already exists')
 
         # creating table
-        self.__checkIfBaseExistsAndCreateItIfNot()
+        self.checkIfBaseExistsAndCreateItIfNot()
 
         # saving
         oCharacterModel.save()
@@ -90,7 +90,7 @@ class CharacterDatabase(MainDatabase):
     # Delete a character in base
     def delete(self, oCharacter):
         assert isinstance(oCharacter, CharacterEntity)
-        self.__checkIfBaseExistsAndCreateItIfNot()
+        MainDatabase.checkIfBaseExistsAndCreateItIfNot()
         oModel = self.__transformEntityIntoModel(oCharacter)
         oModel.delete_instance()
 
@@ -126,7 +126,7 @@ class CharacterDatabase(MainDatabase):
         return oCharacterEntity
 
     def __transformEntityIntoModel(self, oCharacter):
-        oCharacterModel = self.__getCharacterModel()
+        oCharacterModel = self.getCharacterModel()
         if None != oCharacter.iId:
             oCharacterModel.set_id(oCharacter.iId)
         oCharacterModel.name = oCharacter.getName()
@@ -196,12 +196,6 @@ class Character(BaseModel):
     basenaergymax = IntegerField()
 
 
-class CharacterSkills(BaseModel):
-    skill = ForeignKeyField(Skill)
-    character = ForeignKeyField(Character)
-    points = IntegerField()
-
-#databaseCompetences = SqliteDatabase('database/competences.sql')
 
 ##### Competences  ########
 class Skill(Model):
@@ -212,3 +206,11 @@ class Skill(Model):
     base_caracteristic = CharField(max_length=30)
     base_formula = CharField(max_length=30)
     points = IntegerField()
+
+
+class CharacterSkills(BaseModel):
+    skill = ForeignKeyField(Skill)
+    character = ForeignKeyField(Character)
+    points = IntegerField()
+
+#databaseCompetences = SqliteDatabase('database/competences.sql')
