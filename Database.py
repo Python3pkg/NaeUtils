@@ -33,7 +33,13 @@ class CharacterDatabase(MainDatabase):
 
     ###### Save the character in base ######
     def load(self, **kwargs):
+        """
+        Load a character from base
 
+        @param kwargs:id=int if you want to load only one character, skills=True load skills for character, default False
+        @return:
+                an array of character
+        """
         self.checkIfBaseExistsAndCreateItIfNot()
         oCharacterModel = self.getCharacterModel()
 
@@ -50,6 +56,16 @@ class CharacterDatabase(MainDatabase):
         for oEachModel in oResult:
             oEachEntity = self.__transformModelIntoEntity(oEachModel)
             aListOfCharacter.append(oEachEntity)
+
+            if 'skill' in kwargs.keys() and True == kwargs['skill']:
+                # Skill loading
+                SkillModel = CharacterSkills.select()
+                oSkillList = SkillModel.join(Skill).where(CharacterSkills.character==oEachModel)
+                aListOfSkillForCharacter = []
+                for oEachSkill in oSkillList:
+                    oEachSkill = self.__transformSkillInEntity(oEachSkill)
+                    aListOfSkillForCharacter.append(oEachSkill)
+                oEachEntity.setSkills(aListOfSkillForCharacter)
 
         return aListOfCharacter
 
