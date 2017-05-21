@@ -44,10 +44,10 @@ class CharacterDatabase(MainDatabase):
         oCharacterModel = self.getCharacterModel()
 
         oModel = oCharacterModel.select()
-        if 'id' in kwargs.keys():
+        if 'id' in list(kwargs.keys()):
             where = Character.id == kwargs['id']
             oResult = oModel.where(where)
-        elif 'incombat' in kwargs.keys() and kwargs['incombat'] == True:
+        elif 'incombat' in list(kwargs.keys()) and kwargs['incombat'] == True:
             oResult = oModel.where(Character.incombat == True)
         else:
             oResult = oModel
@@ -57,7 +57,7 @@ class CharacterDatabase(MainDatabase):
             oEachEntity = self.__transformModelIntoEntity(oEachModel)
             aListOfCharacter.append(oEachEntity)
 
-            if 'skill' in kwargs.keys() and True == kwargs['skill']:
+            if 'skill' in list(kwargs.keys()) and True == kwargs['skill']:
                 # Skill loading
                 SkillModel = CharacterSkills.select()
                 oSkillList = SkillModel.join(Skill).where(CharacterSkills.character==oEachModel)

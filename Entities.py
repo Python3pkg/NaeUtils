@@ -316,7 +316,7 @@ class Character:
     # Set a star modificator. If set, the star will be augmented
     def setStarModificator(self, sCarac, iValue):
         if sCarac not in self.dStarModificator:
-            raise AssertionError('star modificator must be in '+ ','.join(self.dStarModificator.keys()))
+            raise AssertionError('star modificator must be in '+ ','.join(list(self.dStarModificator.keys())))
         if iValue < -3 or iValue > 0:
             raise ArithmeticError('star '+sCarac+' modificator value must be between -3 and 0')
         self.dStarModificator[sCarac] = iValue
@@ -504,7 +504,7 @@ class CharacterDisplayer:
         try:
             assert isinstance(oCharacter, Character)
         except AssertionError as eError:
-            print 'Please submit a Character object'
+            print('Please submit a Character object')
             raise eError
         self.oCharacter = oCharacter
 
@@ -582,15 +582,15 @@ class CharacterDisplayer:
         self.__displayMember('Vie', str(oCharacter.getLife()))
 
     def __displayTitle(self, sTitle):
-        print colored(sTitle, None, None, ['bold', 'underline']) + ' : '
+        print(colored(sTitle, None, None, ['bold', 'underline']) + ' : ')
     def __displayCaracList(self, lCaracList):
         oTextTable = tt.Texttable()
         oTextTable.header(['Caracteristic', 'Value'])
         oTextTable.add_rows(lCaracList, False)
         sDisplay = oTextTable.draw()
-        print sDisplay
+        print(sDisplay)
 
     # Display a description
     def __displayMember(self, sMemberName, mMemberValue, sColor='white'):
-        print colored(sMemberName, 'green', None, ['underline']) + ' : '+ colored(mMemberValue, sColor)
+        print(colored(sMemberName, 'green', None, ['underline']) + ' : '+ colored(mMemberValue, sColor))
 

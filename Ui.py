@@ -43,11 +43,11 @@ class Menu:
         for oEachCharacter in oCharacterList:
             assert isinstance(oEachCharacter, CharacterEntity)
             sLabelForCharacterListChoice = oEachCharacter.getName()
-            if 'checkbox' in kwargs.keys() and 'callback' in kwargs.keys() and kwargs['checkbox'] == True:
+            if 'checkbox' in list(kwargs.keys()) and 'callback' in list(kwargs.keys()) and kwargs['checkbox'] == True:
                 bState = True if oEachCharacter.getInCombat() == True else False
                 oButton = urwid.CheckBox(sLabelForCharacterListChoice, state=bState, on_state_change=kwargs['callback'], user_data=oEachCharacter)
             else:
-                if 'callback' in kwargs.keys():
+                if 'callback' in list(kwargs.keys()):
                     fCallback = kwargs['callback']
                 else:
                     fCallback = self.openCharacterStyleSheet
@@ -151,9 +151,9 @@ class Menu:
     def createCharacterWindow(self, oButton):
         aCreateCharacter = [urwid.Text('Création de personnage'), urwid.Divider('-')]
         aLeftFormColumn = [urwid.Text('Nom :'), urwid.Text('Age :'), urwid.Divider(), urwid.Text('Type :')]
-        oEditNameForm = urwid.Edit(u"", u"")
+        oEditNameForm = urwid.Edit("", "")
         oEditName = urwid.AttrMap(oEditNameForm, 'formField', focus_map='formFieldSelected')
-        oEditAgeForm = urwid.IntEdit(u"", u"")
+        oEditAgeForm = urwid.IntEdit("", "")
         oEditAge = urwid.AttrMap(oEditAgeForm, 'formField', focus_map='formFieldSelected')
         aType = []
         oTypeValue = {'value': 'pj'}
@@ -214,19 +214,19 @@ class Menu:
 
 
     def returnMenuConfiguration(self):
-        return self.drawEachMenu(u'Nae', [
-            self.drawEachSubMenu(u'Personnages', [
-                self.drawEachButton(u'Liste des personnages', self.openCharacterList),
-                self.drawEachButton(u'Créer un personnage', self.createCharacterWindow),
-                self.drawEachButton(u'Supprimer un personnage', self.deleteCharacterWindow)
+        return self.drawEachMenu('Nae', [
+            self.drawEachSubMenu('Personnages', [
+                self.drawEachButton('Liste des personnages', self.openCharacterList),
+                self.drawEachButton('Créer un personnage', self.createCharacterWindow),
+                self.drawEachButton('Supprimer un personnage', self.deleteCharacterWindow)
                 ]),
 
-            self.drawEachSubMenu(u'Combat', [
-                self.drawEachButton(u'Tirer initiative', self.askForManualInit),
-                self.drawEachButton(u'Sélectionner personnages pour le combat', self.openInCombatMenu),
+            self.drawEachSubMenu('Combat', [
+                self.drawEachButton('Tirer initiative', self.askForManualInit),
+                self.drawEachButton('Sélectionner personnages pour le combat', self.openInCombatMenu),
                 ]),
 
-            self.drawEachButton(u'Quitter', self.exit_program)
+            self.drawEachButton('Quitter', self.exit_program)
         ])
 
     def deleteCharacterWindow(self, oButton=None):
@@ -285,12 +285,12 @@ class Menu:
         contents = self.drawEachMenu(caption, choices)
         def open_menu(button):
             return self.oMainMenu.open_box(contents)
-        return self.drawEachButton([caption, u'...'], open_menu)
+        return self.drawEachButton([caption, '...'], open_menu)
 
 
     def item_chosen(self, button):
-        response = urwid.Text([u'You chose ', button.label, u'\n'])
-        done = self.drawEachButton(u'Ok', self.exit_program)
+        response = urwid.Text(['You chose ', button.label, '\n'])
+        done = self.drawEachButton('Ok', self.exit_program)
         self.oMainMenu.open_box(urwid.Filler(urwid.Pile([response, done])))
 
     def exit_program(self, button):
@@ -319,7 +319,7 @@ class CascadingBoxes(urwid.WidgetPlaceholder):
     max_box_levels = 5
 
     def __init__(self, box):
-        super(CascadingBoxes, self).__init__(urwid.SolidFill(u' '))
+        super(CascadingBoxes, self).__init__(urwid.SolidFill(' '))
         self.box_level = 0
         self.open_box(box)
 
@@ -483,7 +483,7 @@ class CharacterStylesheet(urwid.WidgetPlaceholder):
 
         for iValues in aValues:
 
-            if not isinstance(iValues, types.DictionaryType):
+            if not isinstance(iValues, dict):
                 dFinalValue = {'value':iValues}
             else:
                 dFinalValue = iValues
@@ -492,8 +492,8 @@ class CharacterStylesheet(urwid.WidgetPlaceholder):
                 dFinalValue['value'] = int(dFinalValue['value'])
 
             # Callback is in
-            if 'callback' in dFinalValue.keys():
-                if 'max' in dFinalValue.keys():
+            if 'callback' in list(dFinalValue.keys()):
+                if 'max' in list(dFinalValue.keys()):
                     oTextWidget = CharacterGauge(self, dFinalValue['value'], dFinalValue['callback'], dFinalValue['character'], dFinalValue['max'])
                     oTextWidget.setToto(self.oSecondaryCaracteristics)
                 else:
